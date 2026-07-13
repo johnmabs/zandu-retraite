@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Member;
+use App\Entity\Sector;
+use App\Enum\MemberStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,5 +18,119 @@ class MemberRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Member::class);
+    }
+
+    public function findOneByPhone(string $phone): ?Member
+    {
+        return $this->findOneBy(['phone' => $phone]);
+    }
+
+    // Utilisé par le formulaire d'inscription pour valider l'unicité avant soumission
+    public function phoneExists(string $phone, ?Member $excludeMember = null): bool
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->andWhere('m.phone = :phone')
+            ->setParameter('phone', $phone);
+
+        if ($excludeMember) {
+            $qb->andWhere('m.id != :excludeId')
+                ->setParameter('excludeId', $excludeMember->getId());
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    // Inscriptions en attente de validation par un admin, les plus anciennes en premier
+    public function findPendingRegistrations(int $limit = 50): array
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', MemberStatus::Pending)
+            ->orderBy('m.createdAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    // Membres actifs d'un secteur donné, pour les écrans de gestion admin filtrés par secteur
+    public function findActiveBySector(Sector $sector): array
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.sector = :sector')
+            ->andWhere('m.status = :status')
+            ->setParameter('sector', $sector)
+            ->setParameter('status', MemberStatus::Active)
+            ->orderBy('m.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Recherche paginée pour l'écran admin "Gestion des clients" : filtre combiné
+     * statut / secteur / texte libre (nom, numéro de membre, téléphone).
+     *
+     * @return Paginator<Member>
+     */
+    public function search(
+        ?MemberStatus $status = null,
+        ?Sector $sector = null,
+        ?string $searchTerm = null,
+        int $page = 1,
+        int $perPage = 25,
+    ): Paginator {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.sector', 's', Join::WITH)
+            ->addSelect('s')
+            ->orderBy('m.createdAt', 'DESC');
+
+        if ($status) {
+            $qb->andWhere('m.status = :status')->setParameter('status', $status);
+        }
+
+        if ($sector) {
+            $qb->andWhere('m.sector = :sector')->setParameter('sector', $sector);
+        }
+
+        if ($searchTerm) {
+            $qb->andWhere('m.firstName LIKE :term OR m.lastName LIKE :term OR m.memberNumber LIKE :term OR m.phone LIKE :term')
+                ->setParameter('term', '%' . $searchTerm . '%');
+        }
+
+        $qb->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage);
+
+        return new Paginator($qb->getQuery());
+    }
+
+    // Répartition des membres par statut, pour les compteurs du dashboard admin
+    public function countByStatus(): array
+    {
+        $rows = $this->createQueryBuilder('m')
+            ->select('m.status AS status, COUNT(m.id) AS total')
+            ->groupBy('m.status')
+            ->getQuery()
+            ->getArrayResult();
+
+        // Réindexe par valeur de statut pour un accès direct côté template/service
+        $counts = array_fill_keys(array_map(fn(MemberStatus $s) => $s->value, MemberStatus::cases()), 0);
+        foreach ($rows as $row) {
+            $counts[$row['status']->value] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
+
+    // Prochain numéro fonctionnel disponible (MR-0001, MR-0002...), utilisé par le service d'inscription
+    public function findLastMemberNumber(): ?string
+    {
+        $result = $this->createQueryBuilder('m')
+            ->select('m.memberNumber')
+            ->orderBy('m.memberNumber', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result['memberNumber'] ?? null;
     }
 }
