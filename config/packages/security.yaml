@@ -1,31 +1,69 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Entity\Member:
+            algorithm: auto
+        App\Entity\AdminUser:
+            algorithm: auto
 
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        member_provider:
+            entity:
+                class: App\Entity\Member
+                property: phone
+
+        admin_provider:
+            entity:
+                class: App\Entity\AdminUser
+                property: login
 
     firewalls:
         dev:
-            # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
-        main:
+
+        admin_area:
+            pattern: ^/admin
             lazy: true
-            provider: users_in_memory
+            provider: admin_provider
+            user_checker: App\Security\AdminUserChecker
+            form_login:
+                login_path: admin_login
+                check_path: admin_login
+                username_parameter: _login
+                password_parameter: _pin
+                enable_csrf: true
+                default_target_path: admin_dashboard
+            logout:
+                path: admin_logout
+                target: admin_login
+            login_throttling:
+                max_attempts: 5
+                interval: "15 minutes"
 
-            # Activate different ways to authenticate:
-            # https://symfony.com/doc/current/security.html#the-firewall
+        member_area:
+            pattern: ^/espace-client
+            lazy: true
+            provider: member_provider
+            user_checker: App\Security\MemberUserChecker
+            form_login:
+                login_path: member_login
+                check_path: member_login
+                username_parameter: _phone
+                password_parameter: _pin
+                enable_csrf: true
+                default_target_path: member_dashboard
+            logout:
+                path: member_logout
+                target: member_login
+            login_throttling:
+                max_attempts: 5
+                interval: "15 minutes"
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Note: Only the *first* matching rule is applied
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/espace-client/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/espace-client, roles: ROLE_MEMBER }
 
 when@test:
     security:
