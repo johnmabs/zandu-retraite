@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — Administration{% endblock %}
+
+{% block body %}
+    <h1>Connexion Administration</h1>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form method="post">
+        <label for="login">Identifiant</label>
+        <input type="text" id="login" name="_login" value="{{ last_username }}" autocomplete="username" required>
+
+        <label for="pin">Code PIN</label>
+        <input type="password" id="pin" name="_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" required>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button type="submit">Se connecter</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mon espace{% endblock %}
+{% block body %}
+    <h1>Bienvenue {{ member.fullName }}</h1>
+    <p>Statut : {{ member.status.value }}</p>
+    <a href="{{ path('member_logout') }}">Déconnexion</a>
+{% endblock %}

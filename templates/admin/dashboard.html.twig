@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <h1>Bienvenue {{ admin.fullName }}</h1>
+    <p>Rôle : {{ admin.role.value }}</p>
+    <a href="{{ path('admin_logout') }}">Déconnexion</a>
+{% endblock %}
