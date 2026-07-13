@@ -130,7 +130,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $lastLoginAt = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private \DateTimeImmutable $registeredAt;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -527,7 +527,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->registeredAt;
     }
 
-    public function setRegisteredAt(\DateTimeImmutable $registeredAt): static
+    public function setRegisteredAt(?\DateTimeImmutable $registeredAt): static
     {
         $this->registeredAt = $registeredAt;
 
