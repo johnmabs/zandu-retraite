@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PaymentRepository::class)]
 #[ORM\Table(name: 'payment')]
@@ -205,5 +206,29 @@ class Payment
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateMethodConsistency(ExecutionContextInterface $context): void
+    {
+        if (PaymentMethod::Cash === $this->paymentMethod) {
+            if (PaymentSource::AdminRecorded !== $this->source) {
+                $context->buildViolation('Un paiement en espèces doit être saisi par un administrateur.')
+                    ->atPath('source')
+                    ->addViolation();
+            }
+
+            if (PaymentConfirmationMethod::ManualReview !== $this->confirmationMethod) {
+                $context->buildViolation('Un paiement en espèces se confirme manuellement.')
+                    ->atPath('confirmationMethod')
+                    ->addViolation();
+            }
+        }
+
+        if (PaymentSource::MemberDeclared === $this->source && PaymentMethod::Cash === $this->paymentMethod) {
+            $context->buildViolation('Un membre ne peut pas déclarer un paiement en espèces lui-même.')
+                ->atPath('paymentMethod')
+                ->addViolation();
+        }
     }
 }
