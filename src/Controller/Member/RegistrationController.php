@@ -30,9 +30,8 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('member_registration_success', ['memberNumber' => $member->getMemberNumber()]);
         }
 
-        return $this->render('member/registration.html.twig', [
-            'form' => $form,
-        ]);
+        // Le composant Live rend son propre formulaire ; pas besoin de transmettre $form ici
+        return $this->render('member/registration.html.twig');
     }
 
     #[Route('/espace-client/inscription/succes/{memberNumber}', name: 'member_registration_success')]
