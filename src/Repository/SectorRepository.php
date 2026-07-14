@@ -16,7 +16,7 @@ class SectorRepository extends ServiceEntityRepository
         parent::__construct($registry, Sector::class);
     }
 
-    // Liste triée pour les <select> des formulaires d'inscription/filtres
+    // Liste complète triée, pour les <select> de formulaire (inscription, filtres admin)
     public function findAllOrdered(): array
     {
         return $this->createQueryBuilder('s')
@@ -45,8 +45,8 @@ class SectorRepository extends ServiceEntityRepository
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
 
-    // Charge les secteurs avec leurs sous-secteurs en une seule requête (évite le N+1
-    // classique quand on affiche la liste complète secteur > sous-secteurs en admin)
+    // Charge secteurs + sous-secteurs en une seule requête (évite le N+1 du formulaire
+    // d'inscription en cascade : select secteur -> select sous-secteurs dépendants)
     public function findAllWithSubSectors(): array
     {
         return $this->createQueryBuilder('s')
@@ -58,12 +58,13 @@ class SectorRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // Répartition du nombre de membres par secteur, pour les stats admin
-    public function countMembersBySector(): array
+    // Nombre de membres actifs par secteur, pour le dashboard admin / répartition
+    public function countActiveMembersBySector(): array
     {
         return $this->createQueryBuilder('s')
-            ->select('s.id AS sectorId, s.name AS sectorName, COUNT(m.id) AS total')
-            ->leftJoin('App\Entity\Member', 'm', 'WITH', 'm.sector = s')
+            ->select('s.id AS sectorId', 's.name AS sectorName', 'COUNT(m.id) AS total')
+            ->leftJoin('App\Entity\Member', 'm', 'WITH', 'm.sector = s AND m.status = :active')
+            ->setParameter('active', \App\Enum\MemberStatus::Active)
             ->groupBy('s.id')
             ->orderBy('total', 'DESC')
             ->getQuery()
