@@ -1,0 +1,33 @@
+<div{{ attributes }}>
+    {{ form_start(form) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.gender) }}
+        {{ form_row(form.birthDate) }}
+        {{ form_row(form.phone) }}
+        {{ form_row(form.whatsappPhone) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.idDocumentNumber) }}
+        {{ form_row(form.profession) }}
+
+        {{ form_row(form.sector) }}
+        {# subSector n'existe qu'une fois qu'un secteur a été choisi (champ dépendant) #}
+        {% if form.subSector is defined %}
+            {{ form_row(form.subSector) }}
+        {% endif %}
+        {{ form_row(form.customSectorLabel) }}
+
+        {{ form_row(form.homeAddress) }}
+        {{ form_row(form.activityLocation) }}
+        {{ form_row(form.beneficiary) }}
+
+        {{ form_row(form.dailyPaymentAmount) }}
+        {{ form_row(form.engagementDuration) }}
+        {{ form_row(form.savingsGoal) }}
+        {{ form_row(form.goalDetails) }}
+
+        {{ form_row(form.pin) }}
+
+        <button type="submit">S'inscrire</button>
+    {{ form_end(form) }}
+</div>
