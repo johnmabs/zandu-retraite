@@ -2,15 +2,13 @@
 
 namespace App\Service;
 
-use App\Entity\AuditLog;
+
 use App\Entity\Member;
-use App\Entity\Notification;
 use App\Enum\AuditEventType;
 use App\Enum\MemberStatus;
 use App\Enum\NotificationType;
-use App\Repository\AuditLogRepository;
+use App\Service\DomainEventRecorder;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class MemberRegistrationService
@@ -20,8 +18,7 @@ final class MemberRegistrationService
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly MemberNumberGenerator $memberNumberGenerator,
         private readonly MemberFinancialCalculator $financialCalculator,
-        private readonly AuditLogRepository $auditLogRepository,
-        private readonly RequestStack $requestStack,
+        private readonly DomainEventRecorder $eventRecorder,
     ) {}
 
     // $member arrive déjà peuplé par le formulaire, mais pas encore persisté ;
@@ -36,31 +33,15 @@ final class MemberRegistrationService
         $this->em->persist($member);
         $this->em->flush();
 
-        $this->recordAudit($member);
-        $this->notifyAdmins($member);
+        $this->eventRecorder->record(
+            eventType: AuditEventType::MemberRegistered,
+            description: sprintf('Nouvelle inscription : %s (%s)', $member->getFullName(), $member->getMemberNumber()),
+            actorMember: $member,
+            notificationType: NotificationType::RegistrationSubmitted,
+            notificationMessage: sprintf('%s vient de s\'inscrire et attend une validation.', $member->getFullName()),
+            notificationRelatedMember: $member,
+        );
 
         return $member;
-    }
-
-    private function recordAudit(Member $member): void
-    {
-        $auditLog = new AuditLog();
-        $auditLog->setEventType(AuditEventType::MemberRegistered)
-            ->setDescription(sprintf('Nouvelle inscription : %s (%s)', $member->getFullName(), $member->getMemberNumber()))
-            ->setActorMember($member)
-            ->setIpAddress($this->requestStack->getCurrentRequest()?->getClientIp());
-
-        $this->auditLogRepository->record($auditLog);
-    }
-
-    private function notifyAdmins(Member $member): void
-    {
-        $notification = new Notification();
-        $notification->setType(NotificationType::RegistrationSubmitted)
-            ->setMessage(sprintf('%s vient de s\'inscrire et attend une validation.', $member->getFullName()))
-            ->setRelatedMember($member);
-
-        $this->em->persist($notification);
-        $this->em->flush();
     }
 }
