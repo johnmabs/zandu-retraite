@@ -19,6 +19,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: 'member')]
@@ -570,5 +571,15 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
         $this->subSector = $subSector;
 
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateCustomSectorLabel(ExecutionContextInterface $context): void
+    {
+        if ($this->sector?->isOther() && !$this->customSectorLabel) {
+            $context->buildViolation('Merci de préciser votre secteur d\'activité.')
+                ->atPath('customSectorLabel')
+                ->addViolation();
+        }
     }
 }
