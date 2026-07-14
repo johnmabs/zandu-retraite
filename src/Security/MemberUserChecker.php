@@ -24,6 +24,9 @@ class MemberUserChecker implements UserCheckerInterface
             MemberStatus::Suspended => throw new CustomUserMessageAccountStatusException(
                 'Votre compte est suspendu. Contactez le support.'
             ),
+            MemberStatus::Rejected => throw new CustomUserMessageAccountStatusException(
+                'Votre inscription a été refusée. Contactez le support pour plus d\'informations.'
+            ),
             MemberStatus::Closed => throw new CustomUserMessageAccountStatusException(
                 'Ce compte est clôturé.'
             ),
