@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscriptions en attente{% endblock %}
+{% block body %}
+    <h1>Inscriptions en attente</h1>
+    <table>
+        <thead><tr><th>N°</th><th>Nom</th><th>Téléphone</th><th>Secteur</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for member in members %}
+            <tr>
+                <td>{{ member.memberNumber }}</td>
+                <td>{{ member.fullName }}</td>
+                <td>{{ member.phone }}</td>
+                <td>{{ member.sector.name }}</td>
+                <td>
+                    <form method="post" action="{{ path('admin_member_approve', {id: member.id}) }}" style="display:inline">
+                        <button type="submit">Valider</button>
+                    </form>
+                    <form method="post" action="{{ path('admin_member_reject', {id: member.id}) }}" style="display:inline">
+                        <input type="text" name="reason" placeholder="Motif (optionnel)">
+                        <button type="submit">Rejeter</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

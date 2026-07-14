@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gestion des clients{% endblock %}
+{% block body %}
+    <h1>Clients</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Nom, numéro, téléphone..." value="{{ app.request.query.get('q') }}">
+        <select name="status">
+            <option value="">-- Tous statuts --</option>
+            {% for status in statuses %}
+                <option value="{{ status.value }}" {{ app.request.query.get('status') == status.value ? 'selected' }}>{{ status.value }}</option>
+            {% endfor %}
+        </select>
+        <select name="sector">
+            <option value="">-- Tous secteurs --</option>
+            {% for sector in sectors %}
+                <option value="{{ sector.id }}" {{ app.request.query.get('sector') == sector.id|string ? 'selected' }}>{{ sector.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filtrer</button>
+    </form>
+
+    <table>
+        <thead><tr><th>N°</th><th>Nom</th><th>Téléphone</th><th>Secteur</th><th>Statut</th><th></th></tr></thead>
+        <tbody>
+        {% for member in members %}
+            <tr>
+                <td>{{ member.memberNumber }}</td>
+                <td>{{ member.fullName }}</td>
+                <td>{{ member.phone }}</td>
+                <td>{{ member.sector.name }}</td>
+                <td>{{ member.status.value }}</td>
+                <td><a href="{{ path('admin_member_detail', {id: member.id}) }}">Voir</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
