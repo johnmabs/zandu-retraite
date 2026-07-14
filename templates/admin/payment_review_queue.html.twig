@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block title %}Versements à valider{% endblock %}
+{% block body %}
+    <h1>Versements en attente de validation</h1>
+    <table>
+        <thead><tr><th>Membre</th><th>Montant</th><th>Référence</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td>{{ payment.member.fullName }}</td>
+                <td>{{ payment.amount }} FCFA</td>
+                <td>{{ payment.externalReference }}</td>
+                <td>
+                    <form method="post" action="{{ path('admin_payment_approve', {id: payment.id}) }}" style="display:inline">
+                        <button type="submit">Valider</button>
+                    </form>
+                    <form method="post" action="{{ path('admin_payment_reject', {id: payment.id}) }}" style="display:inline">
+                        <input type="text" name="note" placeholder="Motif (optionnel)">
+                        <button type="submit">Rejeter</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

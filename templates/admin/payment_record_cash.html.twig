@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block title %}Encaissement espèces{% endblock %}
+{% block body %}
+    <h1>Encaissement espèces — {{ member.fullName }}</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+{% endblock %}

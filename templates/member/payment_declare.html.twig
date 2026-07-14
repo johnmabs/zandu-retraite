@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block title %}Déclarer un versement{% endblock %}
+{% block body %}
+    <h1>Déclarer un versement</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Déclarer</button>
+    {{ form_end(form) }}
+{% endblock %}
