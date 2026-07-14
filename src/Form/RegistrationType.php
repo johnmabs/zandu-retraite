@@ -79,10 +79,18 @@ class RegistrationType extends AbstractType
                     },
                 ]);
             })
-            ->add('customSectorLabel', TextType::class, [
-                'label' => 'Précisez si "Autre"',
-                'required' => false,
-            ])
+            ->addDependent('customSectorLabel', 'sector', function (DependentField $field, ?Sector $sector) {
+                $isOther = $sector?->isOther() ?? false;
+
+                $field->add(TextType::class, [
+                    'label' => 'Précisez votre secteur d\'activité',
+                    'required' => $isOther,
+                    'disabled' => !$isOther,
+                    'constraints' => $isOther
+                        ? [new Assert\NotBlank(message: 'Merci de préciser votre secteur d\'activité.')]
+                        : [],
+                ]);
+            })
             ->add('homeAddress', AddressType::class, ['label' => false])
             ->add('activityLocation', ActivityLocationType::class, ['label' => false])
             ->add('beneficiary', BeneficiaryType::class, ['label' => false])
