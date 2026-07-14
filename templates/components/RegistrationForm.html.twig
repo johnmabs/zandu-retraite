@@ -15,7 +15,9 @@
         {% if form.subSector is defined %}
             {{ form_row(form.subSector) }}
         {% endif %}
-        {{ form_row(form.customSectorLabel) }}
+        {% if form.customSectorLabel is defined %}
+            {{ form_row(form.customSectorLabel) }}
+        {% endif %}
 
         {{ form_row(form.homeAddress) }}
         {{ form_row(form.activityLocation) }}
