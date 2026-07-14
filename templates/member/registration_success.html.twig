@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription enregistrée{% endblock %}
+
+{% block body %}
+    <h1>Inscription enregistrée</h1>
+    <p>Votre numéro de membre : <strong>{{ memberNumber }}</strong></p>
+    <p>Votre inscription sera examinée par un administrateur avant activation.</p>
+    <a href="{{ path('member_login') }}">Retour à la connexion</a>
+{% endblock %}
