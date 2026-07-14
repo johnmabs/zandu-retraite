@@ -7,13 +7,14 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Beneficiary;
 use App\Enum\EngagementDuration;
 use App\Enum\Gender;
+use App\Enum\MemberStatus;
 use App\Enum\SalaryCategory;
 use App\Enum\SavingsGoal;
-use App\Enum\MemberStatus;
 use App\Repository\MemberRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
@@ -21,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: 'member')]
+#[UniqueEntity(fields: ['phone'], message: 'Ce numéro de téléphone est déjà utilisé par un autre membre.')]
 #[ORM\HasLifecycleCallbacks]
 class Member implements UserInterface, PasswordAuthenticatedUserInterface
 {
