@@ -31,6 +31,9 @@ class Sector
     #[ORM\OneToMany(mappedBy: 'sector', targetEntity: SubSector::class, orphanRemoval: true)]
     private Collection $subSectors;
 
+    #[ORM\Column]
+    private bool $isOther = false;
+
     public function __construct()
     {
         $this->subSectors = new ArrayCollection();
@@ -89,6 +92,18 @@ class Sector
                 $subSector->setSector(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isOther(): bool
+    {
+        return $this->isOther;
+    }
+
+    public function setIsOther(bool $isOther): static
+    {
+        $this->isOther = $isOther;
 
         return $this;
     }
