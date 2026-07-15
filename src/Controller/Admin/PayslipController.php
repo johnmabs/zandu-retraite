@@ -9,15 +9,18 @@ use App\Repository\MemberRepository;
 use App\Repository\SectorRepository;
 use App\Service\Payslip\PayslipGenerationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
 class PayslipController extends AbstractController
 {
     #[Route('/admin/membres/{id}/bulletin/generer', name: 'admin_payslip_generate', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"payslip-generate-" ~ args["member"].id'))]
     public function generate(Member $member, PayslipGenerationService $service): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayslips);
@@ -45,6 +48,10 @@ class PayslipController extends AbstractController
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayslips);
 
         if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('payslip-generate-batch', $request->request->get('_csrf_token'))) {
+                throw $this->createAccessDeniedException('Invalid CSRF token.');
+            }
+
             /** @var AdminUser $admin */
             $admin = $this->getUser();
 
