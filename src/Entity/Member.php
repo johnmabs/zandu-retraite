@@ -35,7 +35,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
 
     // Numéro fonctionnel lisible affiché à l'utilisateur (ex: MR-0001)
     #[ORM\Column(length: 20, unique: true)]
-    private string $memberNumber;
+    private string $memberNumber = '';
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
@@ -93,7 +93,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
 
     // PIN à 4 chiffres, toujours stocké hashé (jamais en clair)
     #[ORM\Column(length: 255)]
-    private string $pin;
+    private string $pin = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoPath = null;
