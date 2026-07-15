@@ -13,15 +13,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
-use SymfonyCasts\DynamicForms\DependentField;
-use SymfonyCasts\DynamicForms\DynamicFormBuilder;
 
 class PaymentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder = new DynamicFormBuilder($builder);
-
         $builder
             ->add('amount', NumberType::class, [
                 'label' => 'Montant (FCFA)',
@@ -36,33 +32,20 @@ class PaymentType extends AbstractType
             ->add('paymentMethod', EnumType::class, [
                 'class' => PaymentMethod::class,
                 'label' => 'Moyen de paiement',
-                'choices' => [
-                    PaymentMethod::MtnMomo,
-                    PaymentMethod::AirtelMoney,
-                    PaymentMethod::BankTransfer,
-                ],
+                'choices' => [PaymentMethod::MtnMomo, PaymentMethod::AirtelMoney, PaymentMethod::BankTransfer],
                 'placeholder' => '-- Sélectionner --',
+                'attr' => ['data-payment-fields-target' => 'method', 'data-action' => 'payment-fields#update'],
             ])
-            ->addDependent('senderPhoneNumber', 'paymentMethod', function (DependentField $field, ?PaymentMethod $method) {
-                $requiresPhone = \in_array($method, [PaymentMethod::MtnMomo, PaymentMethod::AirtelMoney], true);
-
-                $field->add(TelType::class, [
-                    'label' => 'Numéro utilisé pour le paiement',
-                    'required' => $requiresPhone,
-                    'disabled' => !$requiresPhone,
-                    'constraints' => $requiresPhone ? [new Assert\NotBlank()] : [],
-                ]);
-            })
-            ->addDependent('externalReference', 'paymentMethod', function (DependentField $field, ?PaymentMethod $method) {
-                $isBankTransfer = PaymentMethod::BankTransfer === $method;
-
-                $field->add(TextType::class, [
-                    'label' => 'Référence du virement',
-                    'required' => $isBankTransfer,
-                    'disabled' => !$isBankTransfer,
-                    'constraints' => $isBankTransfer ? [new Assert\NotBlank()] : [],
-                ]);
-            });
+            ->add('senderPhoneNumber', TelType::class, [
+                'label' => 'Numéro utilisé pour le paiement',
+                'required' => false,
+                'row_attr' => ['data-payment-fields-target' => 'phoneRow'],
+            ])
+            ->add('externalReference', TextType::class, [
+                'label' => 'Référence du virement',
+                'required' => false,
+                'row_attr' => ['data-payment-fields-target' => 'referenceRow'],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

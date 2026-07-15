@@ -8,8 +8,6 @@ use App\Entity\SubSector;
 use App\Enum\EngagementDuration;
 use App\Enum\Gender;
 use App\Enum\SavingsGoal;
-use App\Repository\SubSectorRepository;
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -23,16 +21,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
-use SymfonyCasts\DynamicForms\DependentField;
-use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class RegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // Enrobe le builder pour pouvoir déclarer des champs dépendants (addDependent)
-        $builder = new DynamicFormBuilder($builder);
-
         $builder
             ->add('firstName', TextType::class, ['label' => 'Prénom'])
             ->add('lastName', TextType::class, ['label' => 'Nom'])
@@ -57,40 +50,29 @@ class RegistrationType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Secteur d\'activité',
                 'placeholder' => '-- Sélectionner --',
+                'attr' => [
+                    'data-sector-cascade-target' => 'sector',
+                    'data-action' => 'sector-cascade#update',
+                ],
             ])
-            // Se reconstruit côté serveur à chaque changement de "sector" (via ajax du
-            // Live Component), avec uniquement les sous-secteurs du secteur choisi.
-            ->addDependent('subSector', 'sector', function (DependentField $field, ?Sector $sector) {
-                $field->add(EntityType::class, [
-                    'class' => SubSector::class,
-                    'choice_label' => 'name',
-                    'label' => 'Sous-secteur',
-                    'required' => false,
-                    'placeholder' => null === $sector ? 'Sélectionnez d\'abord un secteur' : '-- Sélectionner --',
-                    'disabled' => null === $sector,
-                    'query_builder' => function (SubSectorRepository $repo) use ($sector): QueryBuilder {
-                        $qb = $repo->createQueryBuilder('sub')->orderBy('sub.name', 'ASC');
-
-                        // Aucun secteur choisi : liste volontairement vide plutôt que
-                        // tous les sous-secteurs, pour ne rien pré-sélectionner de faux
-                        return $sector
-                            ? $qb->andWhere('sub.sector = :sector')->setParameter('sector', $sector)
-                            : $qb->andWhere('1 = 0');
-                    },
-                ]);
-            })
-            ->addDependent('customSectorLabel', 'sector', function (DependentField $field, ?Sector $sector) {
-                $isOther = $sector?->isOther() ?? false;
-
-                $field->add(TextType::class, [
-                    'label' => 'Précisez votre secteur d\'activité',
-                    'required' => $isOther,
-                    'disabled' => !$isOther,
-                    'constraints' => $isOther
-                        ? [new Assert\NotBlank(message: 'Merci de préciser votre secteur d\'activité.')]
-                        : [],
-                ]);
-            })
+            // Liste complète, non filtrée server-side : le JS filtre l'affichage,
+            // Member::validateSubSectorBelongsToSector() garantit la cohérence réelle
+            // à la soumission, indépendamment de ce que le JS a fait ou non.
+            ->add('subSector', EntityType::class, [
+                'class' => SubSector::class,
+                'choice_label' => 'name',
+                'group_by' => 'sector.name',
+                'label' => 'Sous-secteur',
+                'required' => false,
+                'placeholder' => 'Sélectionnez d\'abord un secteur',
+                'attr' => ['data-sector-cascade-target' => 'subSector'],
+            ])
+            ->add('customSectorLabel', TextType::class, [
+                'label' => 'Précisez votre secteur d\'activité',
+                'required' => false,
+                'attr' => ['data-sector-cascade-target' => 'customLabel'],
+                'row_attr' => ['data-sector-cascade-target' => 'customLabelRow'],
+            ])
             ->add('homeAddress', AddressType::class, ['label' => false])
             ->add('activityLocation', ActivityLocationType::class, ['label' => false])
             ->add('beneficiary', BeneficiaryType::class, ['label' => false])
@@ -111,10 +93,7 @@ class RegistrationType extends AbstractType
                 'placeholder' => '-- Sélectionner --',
                 'required' => false,
             ])
-            ->add('goalDetails', TextType::class, [
-                'label' => 'Précisez votre objectif',
-                'required' => false,
-            ])
+            ->add('goalDetails', TextType::class, ['label' => 'Précisez votre objectif', 'required' => false])
             ->add('pin', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
