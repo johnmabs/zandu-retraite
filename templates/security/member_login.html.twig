@@ -1,23 +1,38 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Connexion — Espace Client{% endblock %}
-
+{% block title %}Connexion — Espace Client
+{% endblock %}
 {% block body %}
-    <h1>Connexion Espace Client</h1>
+	<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;">
+		<div class="card" style="width:100%;max-width:380px;">
+			<div class="inscription-hero" style="padding:0 0 1.25rem;">
+				<svg viewbox="0 0 32 32" fill="none" style="width:48px;height:48px;margin:0 auto 10px;display:block">
+					<circle cx="16" cy="16" r="15" stroke="#C9A84C" stroke-width="1.5"/>
+					<path d="M8 22 L16 8 L24 22" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					<path d="M11 18 H21" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+					<circle cx="16" cy="8" r="2" fill="#C9A84C"/>
+				</svg>
+				<h1>Espace Client</h1>
+				<p>Connectez-vous avec votre téléphone et votre PIN</p>
+			</div>
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+			{% if error %}
+				<div class="frais-box" style="border-color:rgba(226,75,74,0.3);background:rgba(226,75,74,0.08);margin:0 0 1rem;">
+					<span style="color:var(--danger);font-size:13px;">{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+				</div>
+			{% endif %}
 
-    <form method="post">
-        <label for="phone">Numéro de téléphone</label>
-        <input type="tel" id="phone" name="_phone" value="{{ last_username }}" autocomplete="username" required>
-
-        <label for="pin">Code PIN</label>
-        <input type="password" id="pin" name="_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" required>
-
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-        <button type="submit">Se connecter</button>
-    </form>
+			<form method="post">
+				<div class="form-group" style="margin-bottom:14px;">
+					<label for="phone">Numéro de téléphone</label>
+					<input type="tel" id="phone" name="_phone" value="{{ last_username }}" autocomplete="username" required>
+				</div>
+				<div class="form-group" style="margin-bottom:18px;">
+					<label for="pin">Code PIN</label>
+					<input type="password" id="pin" name="_pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" required>
+				</div>
+				<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+				<button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Se connecter</button>
+			</form>
+		</div>
+	</div>
 {% endblock %}
