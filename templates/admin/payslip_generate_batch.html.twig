@@ -3,6 +3,7 @@
 {% block body %}
     <h1>Générer des bulletins en lot</h1>
     <form method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('payslip-generate-batch') }}">
         <label for="sector">Secteur (laisser vide pour tous les membres actifs)</label>
         <select name="sector" id="sector">
             <option value="">-- Tous --</option>

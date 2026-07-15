@@ -10,6 +10,7 @@
     <a href="{{ path('admin_payment_record_cash', {id: member.id}) }}">Encaisser un versement espèces</a>
 
     <form method="post" action="{{ path('admin_payslip_generate', {id: member.id}) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('payslip-generate-' ~ member.id) }}">
         <button type="submit">Générer le bulletin</button>
     </form>
 

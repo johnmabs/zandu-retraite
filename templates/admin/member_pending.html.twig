@@ -13,9 +13,11 @@
                 <td>{{ member.sector.name }}</td>
                 <td>
                     <form method="post" action="{{ path('admin_member_approve', {id: member.id}) }}" style="display:inline">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('member-approve-' ~ member.id) }}">
                         <button type="submit">Valider</button>
                     </form>
                     <form method="post" action="{{ path('admin_member_reject', {id: member.id}) }}" style="display:inline">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('member-reject-' ~ member.id) }}">
                         <input type="text" name="reason" placeholder="Motif (optionnel)">
                         <button type="submit">Rejeter</button>
                     </form>
