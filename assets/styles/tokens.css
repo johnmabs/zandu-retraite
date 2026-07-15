@@ -1,0 +1,19 @@
+:root {
+    --gold: #c9a84c;
+    --gold-light: #f0d98a;
+    --gold-dark: #8a6a1a;
+    --deep: #0d1b2a;
+    --deep2: #132233;
+    --deep3: #1a2e42;
+    --surface: #1e3348;
+    --surface2: #243d55;
+    --text: #f0ead6;
+    --text2: #b8ae96;
+    --text3: #7a7060;
+    --danger: #e24b4a;
+    --success: #1d9e75;
+    --info: #378add;
+    --warning: #ef9f27;
+    --radius: 10px;
+    --radius-lg: 14px;
+}
