@@ -11,9 +11,11 @@ use App\Repository\PaymentRepository;
 use App\Repository\SectorRepository;
 use App\Service\MemberValidationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
@@ -63,6 +65,7 @@ class MemberController extends AbstractController
     }
 
     #[Route('/admin/membres/{id}/valider', name: 'admin_member_approve', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"member-approve-" ~ args["member"].id'))]
     public function approve(Member $member, MemberValidationService $validationService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);
@@ -77,6 +80,7 @@ class MemberController extends AbstractController
     }
 
     #[Route('/admin/membres/{id}/rejeter', name: 'admin_member_reject', methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"member-reject-" ~ args["member"].id'))]
     public function reject(Member $member, Request $request, MemberValidationService $validationService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);
