@@ -26,25 +26,29 @@ class Payment
 
     #[ORM\ManyToOne(targetEntity: Member::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private Member $member;
+    #[Assert\NotNull(groups: ['complete'])]
+    private ?Member $member = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Assert\Positive]
-    private string $amount;
+    private string $amount = '0.00';
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private \DateTimeImmutable $paymentDate;
+    private ?\DateTimeImmutable $paymentDate = null;
 
     #[ORM\Column(length: 20, enumType: PaymentMethod::class)]
-    private PaymentMethod $paymentMethod;
+    #[Assert\NotNull(message: 'Le moyen de paiement est obligatoire.', groups: ['complete'])]
+    private ?PaymentMethod $paymentMethod = null;
 
     // Qui a initié la saisie : le client lui-même ou un admin
     #[ORM\Column(length: 20, enumType: PaymentSource::class)]
-    private PaymentSource $source;
+    #[Assert\NotNull(groups: ['complete'])]
+    private ?PaymentSource $source = null;
 
     // Comment le versement a été confirmé
     #[ORM\Column(length: 20, enumType: PaymentConfirmationMethod::class)]
-    private PaymentConfirmationMethod $confirmationMethod;
+    #[Assert\NotNull(groups: ['complete'])]
+    private ?PaymentConfirmationMethod $confirmationMethod = null;
 
     #[ORM\Column(length: 20, enumType: PaymentStatus::class)]
     private PaymentStatus $status;
@@ -76,7 +80,7 @@ class Payment
         return $this->id;
     }
 
-    public function getMember(): Member
+    public function getMember(): ?Member
     {
         return $this->member;
     }
@@ -100,7 +104,7 @@ class Payment
         return $this;
     }
 
-    public function getPaymentMethod(): PaymentMethod
+    public function getPaymentMethod(): ?PaymentMethod
     {
         return $this->paymentMethod;
     }
@@ -112,7 +116,7 @@ class Payment
         return $this;
     }
 
-    public function getSource(): PaymentSource
+    public function getSource(): ?PaymentSource
     {
         return $this->source;
     }
@@ -124,7 +128,7 @@ class Payment
         return $this;
     }
 
-    public function getConfirmationMethod(): PaymentConfirmationMethod
+    public function getConfirmationMethod(): ?PaymentConfirmationMethod
     {
         return $this->confirmationMethod;
     }
@@ -208,7 +212,7 @@ class Payment
         return $this;
     }
 
-    #[Assert\Callback]
+    #[Assert\Callback(groups: ['complete'])]
     public function validateMethodConsistency(ExecutionContextInterface $context): void
     {
         if (PaymentMethod::Cash === $this->paymentMethod) {
