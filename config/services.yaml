@@ -1,5 +1,6 @@
 parameters:
     payslip_storage_dir: "%kernel.project_dir%/var/storage/payslips"
+    contract_storage_dir: "%kernel.project_dir%/var/storage/contracts"
 
 services:
     _defaults:
