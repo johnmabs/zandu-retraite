@@ -11,6 +11,7 @@ use App\Enum\MemberStatus;
 use App\Repository\AdminUserRepository;
 use App\Repository\MemberRepository;
 use App\Repository\SectorRepository;
+use App\Service\MemberNumberGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -28,6 +29,7 @@ class CreateTestUsersCommand extends Command
         private readonly SectorRepository $sectorRepository,
         private readonly AdminUserRepository $adminUserRepository,
         private readonly MemberRepository $memberRepository,
+        private readonly MemberNumberGenerator $memberNumberGenerator,
     ) {
         parent::__construct();
     }
@@ -60,10 +62,10 @@ class CreateTestUsersCommand extends Command
             $io->comment('Admin déjà existant, réutilisé.');
         }
 
-        $member = $this->memberRepository->findOneBy(['memberNumber' => 'MR-0001']);
+        $member = $this->memberRepository->findOneBy(['phone' => '+242060000000']);
         if (!$member) {
             $member = new Member();
-            $member->setMemberNumber('MR-0001')
+            $member->setMemberNumber($this->memberNumberGenerator->generate())
                 ->setFirstName('Jean')
                 ->setLastName('Test')
                 ->setPhone('+242060000000')
