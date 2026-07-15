@@ -6,13 +6,15 @@ use App\Entity\ContractTemplate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<ContractTemplate>
- */
 class ContractTemplateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        return parent::__construct($registry, ContractTemplate::class);
+        parent::__construct($registry, ContractTemplate::class);
+    }
+
+    public function findActive(): ?ContractTemplate
+    {
+        return $this->findOneBy(['isActive' => true]);
     }
 }
