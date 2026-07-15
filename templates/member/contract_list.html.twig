@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mon contrat{% endblock %}
+{% block body %}
+    <h1>Mes contrats</h1>
+    <table>
+        <thead><tr><th>Émis le</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for contract in contracts %}
+            <tr>
+                <td>{{ contract.issuedAt|date('d/m/Y') }}</td>
+                <td>{{ contract.signedAt ? 'Signé le ' ~ contract.signedAt|date('d/m/Y') : 'En attente de signature' }}</td>
+                <td>
+                    <a href="{{ path('member_contract_download', {id: contract.id}) }}">Télécharger</a>
+                    {% if not contract.signedAt %}
+                        <form method="post" action="{{ path('member_contract_sign', {id: contract.id}) }}" style="display:inline">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('contract-sign-' ~ contract.id) }}">
+                            <button type="submit">Signer</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
