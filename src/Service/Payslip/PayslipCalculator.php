@@ -3,7 +3,7 @@
 namespace App\Service\Payslip;
 
 use App\Entity\Member;
-use App\Repository\SettingRepository;
+use App\Service\MemberRateResolver;
 
 /**
  * Calcul pur, sans effet de bord — facilement testable unitairement sans
@@ -13,19 +13,7 @@ use App\Repository\SettingRepository;
  */
 final class PayslipCalculator
 {
-    public function __construct(private readonly SettingRepository $settingRepository) {}
-
-    /** @return array{pension: string, management: string, cnss: string} */
-    public function resolveRates(Member $member): array
-    {
-        $setting = $this->settingRepository->getOrCreate();
-
-        return [
-            'pension' => $member->getPensionRate() ?? $setting->getDefaultPensionRate(),
-            'management' => $member->getManagementFeeRate() ?? $setting->getDefaultManagementFeeRate(),
-            'cnss' => $member->getCnssRate() ?? $setting->getDefaultCnssRate(),
-        ];
-    }
+    public function __construct(private readonly MemberRateResolver $rateResolver) {}
 
     /** @param \App\Entity\Payment[] $payments */
     public function calculate(Member $member, array $payments): PayslipCalculation
@@ -35,7 +23,7 @@ final class PayslipCalculator
             $gross = bcadd($gross, $payment->getAmount(), 2);
         }
 
-        $rates = $this->resolveRates($member);
+        $rates = $this->rateResolver->resolve($member);
 
         $pensionShare = bcdiv(bcmul($gross, $rates['pension'], 4), '100', 2);
         $managementFee = bcdiv(bcmul($gross, $rates['management'], 4), '100', 2);
@@ -46,8 +34,6 @@ final class PayslipCalculator
             pensionShareAmount: $pensionShare,
             managementFeeAmount: $managementFee,
             cnssContributionAmount: $cnssContribution,
-            // Sémantique confirmée à l'étape 2.8 : le "net à percevoir" du
-            // bulletin correspond à la part retraite, pas à un solde cash.
             netAmount: $pensionShare,
             paymentsCount: \count($payments),
         );
