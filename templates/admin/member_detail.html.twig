@@ -9,6 +9,10 @@
 
     <a href="{{ path('admin_payment_record_cash', {id: member.id}) }}">Encaisser un versement espèces</a>
 
+    <form method="post" action="{{ path('admin_payslip_generate', {id: member.id}) }}">
+        <button type="submit">Générer le bulletin</button>
+    </form>
+
     <h2>Versements</h2>
     <table>
         <thead><tr><th>Date</th><th>Montant</th><th>Moyen</th><th>Statut</th></tr></thead>

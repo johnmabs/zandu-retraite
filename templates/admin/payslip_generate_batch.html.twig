@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+{% block title %}Génération de bulletins en lot{% endblock %}
+{% block body %}
+    <h1>Générer des bulletins en lot</h1>
+    <form method="post">
+        <label for="sector">Secteur (laisser vide pour tous les membres actifs)</label>
+        <select name="sector" id="sector">
+            <option value="">-- Tous --</option>
+            {% for sector in sectors %}
+                <option value="{{ sector.id }}">{{ sector.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Générer</button>
+    </form>
+{% endblock %}

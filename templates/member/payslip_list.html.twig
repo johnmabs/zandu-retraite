@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes bulletins{% endblock %}
+{% block body %}
+    <h1>Mes bulletins de paie</h1>
+    <table>
+        <thead><tr><th>Numéro</th><th>Période</th><th>Net à percevoir</th><th></th></tr></thead>
+        <tbody>
+        {% for payslip in payslips %}
+            <tr>
+                <td>{{ payslip.payslipNumber }}</td>
+                <td>{{ payslip.periodStart|date('d/m/Y') }} - {{ payslip.periodEnd|date('d/m/Y') }}</td>
+                <td>{{ payslip.netAmount }} FCFA</td>
+                <td><a href="{{ path('member_payslip_download', {id: payslip.id}) }}">Télécharger</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
