@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Repository\MemberRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,10 +12,10 @@ class DashboardController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
     #[IsGranted('ROLE_ADMIN')]
-    public function index(): Response
+    public function index(MemberRepository $memberRepository): Response
     {
         return $this->render('admin/dashboard.html.twig', [
-            'admin' => $this->getUser(),
+            'statusCounts' => $memberRepository->countByStatus(),
         ]);
     }
 }

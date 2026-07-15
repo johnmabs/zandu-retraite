@@ -1,7 +1,37 @@
-{% extends 'base.html.twig' %}
-{% block title %}Administration{% endblock %}
-{% block body %}
-    <h1>Bienvenue {{ admin.fullName }}</h1>
-    <p>Rôle : {{ admin.role.value }}</p>
-    <a href="{{ path('admin_logout') }}">Déconnexion</a>
+{% extends 'layout/app.html.twig' %}
+{% block title %}Vue globale
+{% endblock %}
+{% block content %}
+	<div class="section-title">Vue globale</div>
+
+	<div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-label">Actifs</div>
+			<div class="stat-value green">{{ statusCounts.active }}</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">En attente</div>
+			<div class="stat-value gold">{{ statusCounts.pending }}</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Suspendus</div>
+			<div class="stat-value">{{ statusCounts.suspended }}</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Rejetés</div>
+			<div class="stat-value">{{ statusCounts.rejected }}</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-title">Accès rapide</div>
+		<div class="btn-row">
+			<a href="{{ path('admin_member_pending') }}" class="btn btn-gold">{{ icon('file') }}
+				Inscriptions en attente</a>
+			<a href="{{ path('admin_payment_review_queue') }}" class="btn btn-outline">{{ icon('dollar-sign') }}
+				Versements à valider</a>
+			<a href="{{ path('admin_member_list') }}" class="btn btn-outline">{{ icon('users') }}
+				Gérer les clients</a>
+		</div>
+	</div>
 {% endblock %}

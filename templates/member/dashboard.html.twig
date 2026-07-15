@@ -1,7 +1,40 @@
-{% extends 'base.html.twig' %}
-{% block title %}Mon espace{% endblock %}
-{% block body %}
-    <h1>Bienvenue {{ member.fullName }}</h1>
-    <p>Statut : {{ member.status.value }}</p>
-    <a href="{{ path('member_logout') }}">Déconnexion</a>
+{% extends 'layout/app.html.twig' %}
+{% block title %}Tableau de bord
+{% endblock %}
+{% block content %}
+	<div class="section-title">Bienvenue,
+		{{ member.firstName }}</div>
+
+	<div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-label">Statut</div>
+			<div class="stat-value gold">{{ member.status.value }}</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Versement journalier</div>
+			<div class="stat-value">{{ member.dailyPaymentAmount }}
+				FCFA</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Total cotisé</div>
+			<div class="stat-value green">{{ totalContributed }}
+				FCFA</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Palier</div>
+			<div class="stat-value">{{ member.salaryCategory.value }}</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-title">Accès rapide</div>
+		<div class="btn-row">
+			<a href="{{ path('member_payment_declare') }}" class="btn btn-gold">{{ icon('clock') }}
+				Déclarer un versement</a>
+			<a href="{{ path('member_payslip_list') }}" class="btn btn-outline">{{ icon('card') }}
+				Mes bulletins</a>
+			<a href="{{ path('member_contract_list') }}" class="btn btn-outline">{{ icon('file-check') }}
+				Mon contrat</a>
+		</div>
+	</div>
 {% endblock %}
