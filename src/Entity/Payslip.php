@@ -95,8 +95,6 @@ class Payslip
         return $this;
     }
 
-    // ... reste des getters/setters, même schéma
-
     public function getPayslipNumber(): ?string
     {
         return $this->payslipNumber;
