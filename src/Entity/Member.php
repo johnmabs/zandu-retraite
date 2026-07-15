@@ -39,11 +39,11 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
-    private string $firstName;
+    private string $firstName = '';
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
-    private string $lastName;
+    private string $lastName = '';
 
     #[ORM\Column(length: 10, enumType: Gender::class, nullable: true)]
     private ?Gender $gender = null;
@@ -54,7 +54,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
     // Identifiant de connexion
     #[ORM\Column(length: 20, unique: true)]
     #[Assert\NotBlank]
-    private string $phone;
+    private string $phone = '';
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $whatsappPhone = null;
@@ -75,7 +75,8 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(targetEntity: Sector::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private Sector $sector;
+    #[Assert\NotNull(message: 'Le secteur d\'activité est obligatoire.')]
+    private ?Sector $sector = null;
 
     #[ORM\ManyToOne(targetEntity: SubSector::class)]
     #[ORM\JoinColumn(nullable: true)]
@@ -99,7 +100,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2)]
     #[Assert\GreaterThanOrEqual(500)]
-    private string $dailyPaymentAmount;
+    private string $dailyPaymentAmount = '0.00';
 
     #[ORM\Column(enumType: SalaryCategory::class)]
     private SalaryCategory $salaryCategory;
@@ -229,7 +230,7 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSector(): Sector
+    public function getSector(): ?Sector
     {
         return $this->sector;
     }
@@ -579,6 +580,16 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->sector?->isOther() && !$this->customSectorLabel) {
             $context->buildViolation('Merci de préciser votre secteur d\'activité.')
                 ->atPath('customSectorLabel')
+                ->addViolation();
+        }
+    }
+
+    #[Assert\Callback]
+    public function validateSubSectorBelongsToSector(ExecutionContextInterface $context): void
+    {
+        if ($this->subSector && $this->subSector->getSector() !== $this->sector) {
+            $context->buildViolation('Le sous-secteur sélectionné ne correspond pas au secteur choisi.')
+                ->atPath('subSector')
                 ->addViolation();
         }
     }
