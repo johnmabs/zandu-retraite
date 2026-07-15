@@ -35,4 +35,6 @@ enum AuditEventType: string
         // Intégrations externes
     case ApiCallSucceeded = 'api_call_succeeded';        // api_call
     case ApiCallFailed = 'api_call_failed';              // api_error
+
+    case ContractIssued = 'contract_issued';
 }

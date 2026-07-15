@@ -49,6 +49,7 @@ final class AuditVisibilityResolver
 
         AuditEventType::ApiCallSucceeded->value => [AdminRole::SuperAdmin, AdminRole::Cashier],
         AuditEventType::ApiCallFailed->value => [AdminRole::SuperAdmin, AdminRole::Cashier],
+        AuditEventType::ContractIssued->value => [AdminRole::SuperAdmin, AdminRole::Manager],
     ];
 
     public function isVisibleTo(AuditEventType $eventType, AdminRole $role): bool

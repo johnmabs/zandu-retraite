@@ -12,4 +12,5 @@ enum NotificationType: string
     case NewChatMessage = 'new_chat_message';                  // nouveau_message_client
     case MessageSent = 'message_sent';                         // message_envoye
     case ChangeRequestSubmitted = 'change_request_submitted';  // demande_secteur / demande_wa_groupe
+    case ContractIssued = 'contract_issued';
 }
