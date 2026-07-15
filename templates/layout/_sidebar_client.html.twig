@@ -1,0 +1,36 @@
+{% set items_main = [
+    {route: 'member_dashboard', icon: 'grid', label: 'Tableau de bord'},
+    {route: 'member_payment_declare', icon: 'clock', label: 'Versement du jour'},
+    {route: 'member_payment_history', icon: 'table', label: 'Historique'},
+    {route: null, icon: 'trending-up', label: 'Projection retraite'},
+    {route: 'member_payslip_list', icon: 'card', label: 'Mes bulletins de paie'},
+] %}
+{% set items_account = [
+    {route: 'member_contract_list', icon: 'file-check', label: 'Mon contrat'},
+    {route: null, icon: 'message-circle', label: 'Échange avec Zandu'},
+    {route: null, icon: 'user', label: 'Mon profil'},
+] %}
+
+<div class="sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-label">Menu principal</div>
+        {% for item in items_main %}{{ _self.sidebar_item(item) }}{% endfor %}
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-label">Compte</div>
+        {% for item in items_account %}{{ _self.sidebar_item(item) }}{% endfor %}
+    </div>
+</div>
+
+{% macro sidebar_item(item) %}
+    {% if item.route %}
+        <a href="{{ path(item.route) }}" class="sidebar-item {{ app.request.attributes.get('_route') == item.route ? 'active' }}">
+            {{ icon(item.icon) }}{{ item.label }}
+        </a>
+    {% else %}
+        <div class="sidebar-item disabled" title="Bientôt disponible">
+            {{ icon(item.icon) }}{{ item.label }}
+            <span class="badge-count">bientôt</span>
+        </div>
+    {% endif %}
+{% endmacro %}

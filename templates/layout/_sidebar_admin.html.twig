@@ -1,0 +1,47 @@
+{% set items_admin = [
+    {route: 'admin_dashboard', icon: 'grid', label: 'Vue globale'},
+    {route: 'admin_member_list', icon: 'users', label: 'Clients'},
+    {route: 'admin_payment_review_queue', icon: 'dollar-sign', label: 'Versements'},
+    {route: 'admin_member_pending', icon: 'file', label: 'Inscriptions'},
+    {route: null, icon: 'file-check', label: 'Fiches d\'inscription'},
+    {route: null, icon: 'home', label: 'Secteurs d\'activité'},
+] %}
+
+{% set items_payroll = [
+    {route: 'admin_payslip_generate_batch', icon: 'card', label: 'Salaires & Paies'},
+    {route: null, icon: 'message-square', label: 'Messages & Mails'},
+    {route: null, icon: 'message-circle', label: 'Espace d\'échange'},
+] %}
+{% set items_system = [
+    {route: null, icon: 'bell', label: 'Alarmes & Notifications'},
+    {route: null, icon: 'code', label: 'APIs & Hébergement'},
+    {route: null, icon: 'settings', label: 'Paramètres'},
+] %}
+
+<div class="sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-label">Administration</div>
+        {% for item in items_admin %}{{ _self.sidebar_item(item) }}{% endfor %}
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-label">Paie &amp; communication</div>
+        {% for item in items_payroll %}{{ _self.sidebar_item(item) }}{% endfor %}
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-label">Système</div>
+        {% for item in items_system %}{{ _self.sidebar_item(item) }}{% endfor %}
+    </div>
+</div>
+
+{% macro sidebar_item(item) %}
+    {% if item.route %}
+        <a href="{{ path(item.route) }}" class="sidebar-item {{ app.request.attributes.get('_route') == item.route ? 'active' }}">
+            {{ icon(item.icon) }}{{ item.label }}
+        </a>
+    {% else %}
+        <div class="sidebar-item disabled" title="Bientôt disponible">
+            {{ icon(item.icon) }}{{ item.label }}
+            <span class="badge-count">bientôt</span>
+        </div>
+    {% endif %}
+{% endmacro %}
