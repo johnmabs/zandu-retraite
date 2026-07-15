@@ -4,6 +4,7 @@ namespace App\Controller\Member;
 
 use App\Entity\Member;
 use App\Form\RegistrationType;
+use App\Repository\SectorRepository;
 use App\Service\MemberRegistrationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/espace-client/inscription', name: 'member_registration')]
-    public function register(Request $request, MemberRegistrationService $registrationService): Response
+    public function register(Request $request, MemberRegistrationService $registrationService, SectorRepository $sectorRepository): Response
     {
         $member = new Member();
         $form = $this->createForm(RegistrationType::class, $member);
@@ -30,8 +31,27 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('member_registration_success', ['memberNumber' => $member->getMemberNumber()]);
         }
 
-        // Le composant Live rend son propre formulaire ; pas besoin de transmettre $form ici
-        return $this->render('member/registration.html.twig');
+        $sectors = $sectorRepository->findAllWithSubSectors();
+
+        $subSectorsBySector = [];
+        $otherSectorIds = [];
+
+        foreach ($sectors as $sector) {
+            $subSectorsBySector[(string) $sector->getId()] = array_map(
+                fn($sub) => ['id' => (string) $sub->getId(), 'name' => $sub->getName()],
+                $sector->getSubSectors()->toArray(),
+            );
+
+            if ($sector->isOther()) {
+                $otherSectorIds[] = (string) $sector->getId();
+            }
+        }
+
+        return $this->render('member/registration.html.twig', [
+            'form' => $form,
+            'subSectorsBySector' => $subSectorsBySector,
+            'otherSectorIds' => $otherSectorIds,
+        ]);
     }
 
     #[Route('/espace-client/inscription/succes/{memberNumber}', name: 'member_registration_success')]
