@@ -12,12 +12,14 @@ use App\Enum\PaymentMethod;
 use App\Enum\PaymentSource;
 use App\Enum\PaymentStatus;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class PaymentService
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly DomainEventRecorder $eventRecorder,
+        private readonly ValidatorInterface $validator,
     ) {}
 
     /**
@@ -37,6 +39,8 @@ final class PaymentService
                 : PaymentConfirmationMethod::ApiAuto,
         );
         $payment->setStatus(PaymentStatus::Pending);
+
+        $this->assertComplete($payment);
 
         $this->em->persist($payment);
         $this->em->flush();
@@ -63,6 +67,8 @@ final class PaymentService
         $payment->setStatus(PaymentStatus::Confirmed);
         $payment->setRecordedBy($admin);
 
+        $this->assertComplete($payment);
+
         $this->em->persist($payment);
         $this->em->flush();
 
@@ -76,6 +82,18 @@ final class PaymentService
         );
 
         return $payment;
+    }
+
+    // Filet de sécurité : garantit qu'un Payment est réellement complet et
+    // cohérent juste avant persistance, indépendamment de ce que le
+    // formulaire (qui ne valide que le groupe Default) a vérifié ou non.
+    private function assertComplete(Payment $payment): void
+    {
+        $violations = $this->validator->validate($payment, groups: ['Default', 'complete']);
+
+        if (\count($violations) > 0) {
+            throw new \LogicException((string) $violations);
+        }
     }
 
     // Un admin valide ou rejette un versement en attente de revue manuelle (virements essentiellement)
