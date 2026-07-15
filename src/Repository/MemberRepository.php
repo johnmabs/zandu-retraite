@@ -133,4 +133,15 @@ class MemberRepository extends ServiceEntityRepository
 
         return $result['memberNumber'] ?? null;
     }
+
+    // Utilisé par la génération en lot. toIterable() évite de charger tous les
+    // membres actifs en mémoire d'un coup si leur nombre devient important.
+    public function findAllActive(): iterable
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', MemberStatus::Active)
+            ->getQuery()
+            ->toIterable();
+    }
 }
