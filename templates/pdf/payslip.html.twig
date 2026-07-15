@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>
+    body { font-family: sans-serif; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    td, th { border: 1px solid #ccc; padding: 8px; text-align: left; }
+</style></head>
+<body>
+    <h1>Bulletin {{ payslip.payslipNumber }}</h1>
+    <p>{{ payslip.member.fullName }} — {{ payslip.member.memberNumber }}</p>
+    <p>Période : du {{ payslip.periodStart|date('d/m/Y') }} au {{ payslip.periodEnd|date('d/m/Y') }}</p>
+    <table>
+        <tr><th>Nombre de versements</th><td>{{ payslip.paymentsCount }}</td></tr>
+        <tr><th>Total brut cotisé</th><td>{{ payslip.grossAmount }} FCFA</td></tr>
+        <tr><th>Part retraite</th><td>{{ payslip.pensionShareAmount }} FCFA</td></tr>
+        <tr><th>Frais de gestion</th><td>{{ payslip.managementFeeAmount }} FCFA</td></tr>
+        <tr><th>Cotisation CNSS</th><td>{{ payslip.cnssContributionAmount }} FCFA</td></tr>
+        <tr><th>Net à percevoir</th><td><strong>{{ payslip.netAmount }} FCFA</strong></td></tr>
+    </table>
+</body>
+</html>
