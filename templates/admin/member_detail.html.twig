@@ -1,36 +1,115 @@
-{% extends 'base.html.twig' %}
-{% block title %}{{ member.fullName }}{% endblock %}
-{% block body %}
-    <h1>{{ member.fullName }} — {{ member.memberNumber }}</h1>
-    <p>Statut : {{ member.status.value }}</p>
-    <p>Téléphone : {{ member.phone }}</p>
-    <p>Secteur : {{ member.sector.name }}</p>
-    <p>Versement journalier : {{ member.dailyPaymentAmount }} FCFA ({{ member.salaryCategory.value }})</p>
+{% extends 'layout/app.html.twig' %}
+{% block title %}
+	{{ member.fullName }}
+{% endblock %}
+{% block content %}
+	<div class="section-title">{{ member.fullName }}
+		—
+		{{ member.memberNumber }}</div>
 
-    <a href="{{ path('admin_payment_record_cash', {id: member.id}) }}">Encaisser un versement espèces</a>
+	<div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-label">Statut</div>
+			<div class="stat-value">
+				<span class="tag {{ member.status.value|tag_class }}">{{ member.status.value }}</span>
+			</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Versement journalier</div>
+			<div class="stat-value">{{ member.dailyPaymentAmount }}
+				FCFA</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Palier</div>
+			<div class="stat-value gold">{{ member.salaryCategory.value }}</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-label">Secteur</div>
+			<div class="stat-value">{{ member.sector.name }}</div>
+		</div>
+	</div>
 
-    <form method="post" action="{{ path('admin_payslip_generate', {id: member.id}) }}">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('payslip-generate-' ~ member.id) }}">
-        <button type="submit">Générer le bulletin</button>
-    </form>
+	<div class="card">
+		<div class="card-title">Informations</div>
+		<div class="form-grid col3">
+			<div class="form-group">
+				<label>Téléphone</label>
+				<span>{{ member.phone }}</span>
+			</div>
+			<div class="form-group">
+				<label>WhatsApp</label>
+				<span>{{ member.whatsappPhone ?? 'Non renseigné' }}</span>
+			</div>
+			<div class="form-group">
+				<label>Email</label>
+				<span>{{ member.email ?? 'Non renseigné' }}</span>
+			</div>
+			<div class="form-group">
+				<label>Pièce d'identité</label>
+				<span>{{ member.idDocumentNumber ?? 'Non renseignée' }}</span>
+			</div>
+			<div class="form-group">
+				<label>Profession</label>
+				<span>{{ member.profession ?? 'Non renseignée' }}</span>
+			</div>
+			<div class="form-group">
+				<label>Inscrit le</label>
+				<span>{{ member.registeredAt ? member.registeredAt|date('d/m/Y') : 'En attente' }}</span>
+			</div>
+		</div>
+	</div>
 
-    <form method="post" action="{{ path('admin_contract_issue', {id: member.id}) }}">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('contract-issue-' ~ member.id) }}">
-        <button type="submit">Émettre le contrat</button>
-    </form>
+	<div class="card">
+		<div class="card-title">Actions</div>
+		<div class="btn-row">
+			<a href="{{ path('admin_payment_record_cash', {id: member.id}) }}" class="btn btn-gold">{{ icon('dollar-sign') }}
+				Encaisser espèces</a>
 
-    <h2>Versements</h2>
-    <table>
-        <thead><tr><th>Date</th><th>Montant</th><th>Moyen</th><th>Statut</th></tr></thead>
-        <tbody>
-        {% for payment in payments %}
-            <tr>
-                <td>{{ payment.paymentDate|date('d/m/Y') }}</td>
-                <td>{{ payment.amount }} FCFA</td>
-                <td>{{ payment.paymentMethod.value }}</td>
-                <td>{{ payment.status.value }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+			<form method="post" action="{{ path('admin_payslip_generate', {id: member.id}) }}">
+				<input type="hidden" name="_csrf_token" value="{{ csrf_token('payslip-generate-' ~ member.id) }}">
+				<button type="submit" class="btn btn-outline">{{ icon('card') }}
+					Générer le bulletin</button>
+			</form>
+
+			<form method="post" action="{{ path('admin_contract_issue', {id: member.id}) }}">
+				<input type="hidden" name="_csrf_token" value="{{ csrf_token('contract-issue-' ~ member.id) }}">
+				<button type="submit" class="btn btn-outline">{{ icon('file-check') }}
+					Émettre le contrat</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-title">Versements</div>
+		{% if payments.iterator|length == 0 %}
+			<div class="empty">{{ icon('clock') }}<p>Aucun versement enregistré.</p>
+			</div>
+		{% else %}
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Montant</th>
+							<th>Moyen</th>
+							<th>Statut</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for payment in payments %}
+							<tr>
+								<td>{{ payment.paymentDate|date('d/m/Y') }}</td>
+								<td>{{ payment.amount }}
+									FCFA</td>
+								<td>{{ payment.paymentMethod.value }}</td>
+								<td>
+									<span class="tag {{ payment.status.value|tag_class }}">{{ payment.status.value }}</span>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
+	</div>
 {% endblock %}
