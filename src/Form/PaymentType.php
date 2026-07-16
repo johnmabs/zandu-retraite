@@ -33,8 +33,7 @@ class PaymentType extends AbstractType
                 'class' => PaymentMethod::class,
                 'label' => 'Moyen de paiement',
                 'choices' => [PaymentMethod::MtnMomo, PaymentMethod::AirtelMoney, PaymentMethod::BankTransfer],
-                'placeholder' => '-- Sélectionner --',
-                'attr' => ['data-payment-fields-target' => 'method', 'data-action' => 'payment-fields#update'],
+                'expanded' => true,
             ])
             ->add('senderPhoneNumber', TelType::class, [
                 'label' => 'Numéro utilisé pour le paiement',
