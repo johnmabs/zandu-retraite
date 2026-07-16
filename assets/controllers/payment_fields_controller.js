@@ -10,7 +10,8 @@ export default class extends Controller {
     }
 
     update() {
-        const method = this.methodTarget.value;
+        const checked = this.methodTargets.find((el) => el.checked);
+        const method = checked?.value;
 
         this.phoneRowTarget.style.display = PHONE_METHODS.includes(method)
             ? ""
