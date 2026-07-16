@@ -32,6 +32,15 @@ final class UiExtension extends AbstractExtension
         'settings' => '<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>',
     ];
 
+    private const array TAG_CLASSES = [
+        'active' => 'tag-green',
+        'confirmed' => 'tag-green',
+        'pending' => 'tag-gold',
+        'suspended' => 'tag-orange',
+        'rejected' => 'tag-red',
+        'closed' => 'tag-red',
+    ];
+
     public function getFunctions(): array
     {
         return [
@@ -43,6 +52,7 @@ final class UiExtension extends AbstractExtension
     {
         return [
             new TwigFilter('initials', $this->initials(...)),
+            new TwigFilter('tag_class', fn(string $status): string => self::TAG_CLASSES[$status] ?? 'tag-blue'),
         ];
     }
 
