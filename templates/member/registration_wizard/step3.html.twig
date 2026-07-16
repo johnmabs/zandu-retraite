@@ -1,0 +1,38 @@
+{% extends 'member/registration_wizard/_layout.html.twig' %}
+{% set current_step = 3 %}
+{% block step_content %}
+	<div class="card">
+		<div class="section-title">Paiement des frais d'inscription</div>
+
+		<div class="frais-box">
+			<div class="frais-row total">
+				<span class="frais-label">Montant à régler</span>
+				<span class="frais-value">{{ registrationFee }}
+					FCFA</span>
+			</div>
+		</div>
+		<p style="font-size:12px;color:var(--text2);margin:12px 0;">
+			Un administrateur confirmera la réception de ce paiement une fois votre inscription examinée.
+		</p>
+
+		{{ form_start(form) }}
+		<div class="pay-methods" {{ stimulus_controller('registration-fee-method') }}>
+			{% for child in form.registrationFeePaymentMethod %}
+				<label class="pay-card" {{ stimulus_target('registration-fee-method', 'card') }}>
+					{{ form_widget(child, {attr: {style: 'display:none'}}) }}
+					<div class="pay-name">{{ child.vars.label }}</div>
+				</label>
+			{% endfor %}
+		</div>
+
+		<div class="form-group full" style="margin-top:1rem">
+			{{ form_row(form.registrationFeeSenderPhone) }}
+		</div>
+
+		<div class="btn-row">
+			<a href="{{ path('member_registration_step2') }}" class="btn btn-outline btn-sm">← Retour</a>
+			<button type="submit" class="btn btn-gold">Continuer →</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+{% endblock %}

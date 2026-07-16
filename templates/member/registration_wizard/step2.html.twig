@@ -1,0 +1,39 @@
+{% extends 'member/registration_wizard/_layout.html.twig' %}
+{% set current_step = 2 %}
+{% block step_content %}
+	<div class="card" {{ stimulus_controller('registration-plan', { pensionRate: rates.pension, managementRate: rates.management, cnssRate: rates.cnss, } ) }}>
+		<div class="section-title">Votre plan d'épargne</div>
+		{{ form_start(form) }}
+		<div class="form-grid">
+			{{ form_row(form.dailyPaymentAmount) }}
+			{{ form_row(form.engagementDuration) }}
+			<div class="form-group full">{{ form_row(form.savingsGoal) }}</div>
+			<div class="form-group full">{{ form_row(form.goalDetails) }}</div>
+		</div>
+
+		<div class="frais-box" {{ stimulus_target('registration-plan', 'box') }} style="display:none">
+			<div class="frais-row">
+				<span class="frais-label">Part retraite / jour</span>
+				<span class="frais-value" {{ stimulus_target('registration-plan', 'pensionDay') }}>—</span>
+			</div>
+			<div class="frais-row">
+				<span class="frais-label">Frais de gestion / jour</span>
+				<span class="frais-value" {{ stimulus_target('registration-plan', 'managementDay') }}>—</span>
+			</div>
+			<div class="frais-row">
+				<span class="frais-label">Cotisation CNSS / jour</span>
+				<span class="frais-value" {{ stimulus_target('registration-plan', 'cnssDay') }}>—</span>
+			</div>
+			<div class="frais-row total">
+				<span class="frais-label">Capital retraite estimé (durée totale)</span>
+				<span {{ stimulus_target('registration-plan', 'capital') }}>—</span>
+			</div>
+		</div>
+
+		<div class="btn-row">
+			<a href="{{ path('member_registration_step1') }}" class="btn btn-outline btn-sm">← Retour</a>
+			<button type="submit" class="btn btn-gold">Continuer →</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+{% endblock %}

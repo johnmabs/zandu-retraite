@@ -1,0 +1,36 @@
+{% extends 'member/registration_wizard/_layout.html.twig' %}
+{% set current_step = 1 %}
+{% block step_content %}
+	<div class="card" {{ stimulus_controller('sector-cascade', { subSectorsBySector: sectors|reduce((carry, s) => carry|merge({(s.id): s.subSectors|map(sub => {id: sub.id, name: sub.name} )}), {}), othersectorids: sectors|filter(s ="> s.isOther)|map(s => s.id|string)," }) }}>
+		<div class="section-title">Identité et activité</div>
+		{{ form_start(form) }}
+		<div class="form-grid">
+			{{ form_row(form.firstName) }}
+			{{ form_row(form.lastName) }}
+			{{ form_row(form.gender) }}
+			{{ form_row(form.birthDate) }}
+			{{ form_row(form.phone) }}
+			{{ form_row(form.whatsappPhone) }}
+			{{ form_row(form.email) }}
+			{{ form_row(form.idDocumentNumber) }}
+			<div class="form-group full">{{ form_row(form.profession) }}</div>
+			{{ form_row(form.sector) }}
+			{{ form_row(form.subSector) }}
+			<div class="form-group full">{{ form_row(form.customSectorLabel) }}</div>
+		</div>
+
+		<div class="section-title" style="margin-top:1.5rem">Bénéficiaire</div>
+		<div class="form-grid">{{ form_widget(form.beneficiary) }}</div>
+
+		<div class="section-title" style="margin-top:1.5rem">Lieu d'activité</div>
+		<div class="form-grid">{{ form_widget(form.activityLocation) }}</div>
+
+		<div class="section-title" style="margin-top:1.5rem">Adresse du domicile</div>
+		<div class="form-grid">{{ form_widget(form.homeAddress) }}</div>
+
+		<div class="btn-row">
+			<button type="submit" class="btn btn-gold">Continuer →</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+{% endblock %}
