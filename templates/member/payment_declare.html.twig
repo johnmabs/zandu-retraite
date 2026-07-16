@@ -1,9 +1,42 @@
-{% extends 'base.html.twig' %}
-{% block title %}Déclarer un versement{% endblock %}
-{% block body %}
-    <h1>Déclarer un versement</h1>
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit">Déclarer</button>
-    {{ form_end(form) }}
+{% extends 'layout/app.html.twig' %}
+{% block title %}Déclarer un versement
+{% endblock %}
+{% block content %}
+	<div class="section-title">Déclarer un versement</div>
+
+	<div class="card">
+		{{ form_start(form) }}
+		<div class="form-group full" style="margin-bottom:16px;">
+			<label>{{ form_label(form.paymentMethod) }}</label>
+			<div class="pay-methods" {{ stimulus_controller('pay-method-cards') }}>
+				{% for child in form.paymentMethod %}
+					<label class="pay-card" {{ stimulus_target('pay-method-cards', 'card') }}>
+						{{ form_widget(child, {attr: {
+                                style: 'display:none',
+                                'data-action': 'change->pay-method-cards#refresh change->payment-fields#update',
+                                'data-payment-fields-target': 'method',
+                            }}) }}
+						<div class="pay-name">{{ child.vars.label }}</div>
+					</label>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-grid" {{ stimulus_controller('payment-fields') }}>
+			<div class="form-group">{{ form_label(form.amount) }}{{ form_widget(form.amount) }}</div>
+			<div class="form-group">{{ form_label(form.paymentDate) }}{{ form_widget(form.paymentDate) }}</div>
+			<div class="form-group" {{ stimulus_target('payment-fields', 'phoneRow') }}>
+				{{ form_label(form.senderPhoneNumber) }}{{ form_widget(form.senderPhoneNumber) }}
+			</div>
+			<div class="form-group" {{ stimulus_target('payment-fields', 'referenceRow') }}>
+				{{ form_label(form.externalReference) }}{{ form_widget(form.externalReference) }}
+			</div>
+		</div>
+
+		<div class="btn-row">
+			<button type="submit" class="btn btn-gold">{{ icon('clock') }}
+				Déclarer le versement</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
 {% endblock %}

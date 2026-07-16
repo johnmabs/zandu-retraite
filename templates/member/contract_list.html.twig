@@ -1,25 +1,48 @@
-{% extends 'base.html.twig' %}
-{% block title %}Mon contrat{% endblock %}
-{% block body %}
-    <h1>Mes contrats</h1>
-    <table>
-        <thead><tr><th>Émis le</th><th>Statut</th><th>Actions</th></tr></thead>
-        <tbody>
-        {% for contract in contracts %}
-            <tr>
-                <td>{{ contract.issuedAt|date('d/m/Y') }}</td>
-                <td>{{ contract.signedAt ? 'Signé le ' ~ contract.signedAt|date('d/m/Y') : 'En attente de signature' }}</td>
-                <td>
-                    <a href="{{ path('member_contract_download', {id: contract.id}) }}">Télécharger</a>
-                    {% if not contract.signedAt %}
-                        <form method="post" action="{{ path('member_contract_sign', {id: contract.id}) }}" style="display:inline">
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('contract-sign-' ~ contract.id) }}">
-                            <button type="submit">Signer</button>
-                        </form>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+{% extends 'layout/app.html.twig' %}
+{% block title %}Mon contrat
+{% endblock %}
+{% block content %}
+	<div class="section-title">Mes contrats</div>
+	<div class="card">
+		{% if contracts is empty %}
+			<div class="empty">{{ icon('file-check') }}<p>Aucun contrat émis pour l'instant.</p>
+			</div>
+		{% else %}
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Émis le</th>
+							<th>Statut</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for contract in contracts %}
+							<tr>
+								<td>{{ contract.issuedAt|date('d/m/Y') }}</td>
+								<td>
+									{% if contract.signedAt %}
+										<span class="tag tag-green">Signé le
+											{{ contract.signedAt|date('d/m/Y') }}</span>
+									{% else %}
+										<span class="tag tag-gold">En attente de signature</span>
+									{% endif %}
+								</td>
+								<td>
+									<a href="{{ path('member_contract_download', {id: contract.id}) }}" class="btn btn-outline btn-sm">Télécharger</a>
+									{% if not contract.signedAt %}
+										<form method="post" action="{{ path('member_contract_sign', {id: contract.id}) }}" style="display:inline">
+											<input type="hidden" name="_csrf_token" value="{{ csrf_token('contract-sign-' ~ contract.id) }}">
+											<button type="submit" class="btn btn-gold btn-sm">Signer</button>
+										</form>
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
+	</div>
 {% endblock %}
