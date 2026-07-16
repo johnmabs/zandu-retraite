@@ -8,6 +8,7 @@ use App\Entity\Embeddable\Beneficiary;
 use App\Enum\EngagementDuration;
 use App\Enum\Gender;
 use App\Enum\MemberStatus;
+use App\Enum\RegistrationFeeMethod;
 use App\Enum\SalaryCategory;
 use App\Enum\SavingsGoal;
 use App\Repository\MemberRepository;
@@ -127,6 +128,11 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2, nullable: true)]
     private ?string $registrationFeeAmount = null;
 
+    #[ORM\Column(length: 20, enumType: RegistrationFeeMethod::class, nullable: true)]
+    private ?RegistrationFeeMethod $registrationFeePaymentMethod = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $registrationFeeSenderPhone = null;
 
     #[ORM\Column(length: 20, enumType: MemberStatus::class)]
     private MemberStatus $status;
@@ -592,5 +598,24 @@ class Member implements UserInterface, PasswordAuthenticatedUserInterface
                 ->atPath('subSector')
                 ->addViolation();
         }
+    }
+
+    public function getRegistrationFeePaymentMethod(): ?RegistrationFeeMethod
+    {
+        return $this->registrationFeePaymentMethod;
+    }
+    public function setRegistrationFeePaymentMethod(?RegistrationFeeMethod $method): static
+    {
+        $this->registrationFeePaymentMethod = $method;
+        return $this;
+    }
+    public function getRegistrationFeeSenderPhone(): ?string
+    {
+        return $this->registrationFeeSenderPhone;
+    }
+    public function setRegistrationFeeSenderPhone(?string $phone): static
+    {
+        $this->registrationFeeSenderPhone = $phone;
+        return $this;
     }
 }
