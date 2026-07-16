@@ -74,9 +74,27 @@ class RegistrationWizardController extends AbstractController
             return $this->redirectToRoute('member_registration_step2');
         }
 
+        $sectors = $sectorRepository->findAllWithSubSectors();
+
+        $subSectorsBySector = [];
+        $otherSectorIds = [];
+
+        foreach ($sectors as $sector) {
+            $subSectorsBySector[(string) $sector->getId()] = array_map(
+                fn($sub) => ['id' => (string) $sub->getId(), 'name' => $sub->getName()],
+                $sector->getSubSectors()->toArray(),
+            );
+
+            if ($sector->isOther()) {
+                $otherSectorIds[] = (string) $sector->getId();
+            }
+        }
+
         return $this->render('member/registration_wizard/step1.html.twig', [
             'form' => $form,
-            'sectors' => $sectorRepository->findAllWithSubSectors(),
+            'sectors' => $sectors,
+            'subSectorsBySector' => $subSectorsBySector,
+            'otherSectorIds' => $otherSectorIds,
         ]);
     }
 

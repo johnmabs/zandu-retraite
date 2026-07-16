@@ -1,7 +1,7 @@
 {% extends 'member/registration_wizard/_layout.html.twig' %}
 {% set current_step = 1 %}
 {% block step_content %}
-	<div class="card" {{ stimulus_controller('sector-cascade', { subSectorsBySector: sectors|reduce((carry, s) => carry|merge({(s.id): s.subSectors|map(sub => {id: sub.id, name: sub.name} )}), {}), othersectorids: sectors|filter(s ="> s.isOther)|map(s => s.id|string)," }) }}>
+	<div class="card" {{ stimulus_controller('sector-cascade', { subSectorsBySector: subSectorsBySector, otherSectorIds: otherSectorIds, } ) }}>
 		<div class="section-title">Identité et activité</div>
 		{{ form_start(form) }}
 		<div class="form-grid">
