@@ -1,28 +1,47 @@
-{% extends 'base.html.twig' %}
-{% block title %}Versements à valider{% endblock %}
-{% block body %}
-    <h1>Versements en attente de validation</h1>
-    <table>
-        <thead><tr><th>Membre</th><th>Montant</th><th>Référence</th><th>Actions</th></tr></thead>
-        <tbody>
-        {% for payment in payments %}
-            <tr>
-                <td>{{ payment.member.fullName }}</td>
-                <td>{{ payment.amount }} FCFA</td>
-                <td>{{ payment.externalReference }}</td>
-                <td>
-                    <form method="post" action="{{ path('admin_payment_approve', {id: payment.id}) }}" style="display:inline">
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('payment-approve-' ~ payment.id) }}">
-                        <button type="submit">Valider</button>
-                    </form>
-                    <form method="post" action="{{ path('admin_payment_reject', {id: payment.id}) }}" style="display:inline">
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('payment-reject-' ~ payment.id) }}">
-                        <input type="text" name="note" placeholder="Motif (optionnel)">
-                        <button type="submit">Rejeter</button>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+{% extends 'layout/app.html.twig' %}
+{% block title %}Versements à valider
+{% endblock %}
+{% block content %}
+	<div class="section-title">Versements en attente de validation</div>
+
+	<div class="card">
+		{% if payments is empty %}
+			<div class="empty">{{ icon('dollar-sign') }}<p>Aucun versement en attente de revue manuelle.</p>
+			</div>
+		{% else %}
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Membre</th>
+							<th>Montant</th>
+							<th>Référence</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for payment in payments %}
+							<tr>
+								<td>{{ payment.member.fullName }}</td>
+								<td>{{ payment.amount }}
+									FCFA</td>
+								<td>{{ payment.externalReference }}</td>
+								<td>
+									<form method="post" action="{{ path('admin_payment_approve', {id: payment.id}) }}" style="display:inline">
+										<input type="hidden" name="_csrf_token" value="{{ csrf_token('payment-approve-' ~ payment.id) }}">
+										<button type="submit" class="btn btn-success btn-sm">Valider</button>
+									</form>
+									<form method="post" action="{{ path('admin_payment_reject', {id: payment.id}) }}" style="display:inline-flex;gap:6px;">
+										<input type="hidden" name="_csrf_token" value="{{ csrf_token('payment-reject-' ~ payment.id) }}">
+										<input type="text" name="note" placeholder="Motif" style="width:110px;">
+										<button type="submit" class="btn btn-danger btn-sm">Rejeter</button>
+									</form>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
+	</div>
 {% endblock %}

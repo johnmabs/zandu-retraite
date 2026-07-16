@@ -1,9 +1,19 @@
-{% extends 'base.html.twig' %}
-{% block title %}Encaissement espèces{% endblock %}
-{% block body %}
-    <h1>Encaissement espèces — {{ member.fullName }}</h1>
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit">Enregistrer</button>
-    {{ form_end(form) }}
+{% extends 'layout/app.html.twig' %}
+{% block title %}Encaissement espèces
+{% endblock %}
+{% block content %}
+	<div class="section-title">Encaissement espèces —
+		{{ member.fullName }}</div>
+	<div class="card">
+		{{ form_start(form) }}
+		<div class="form-grid">
+			<div class="form-group">{{ form_label(form.amount) }}{{ form_widget(form.amount) }}</div>
+			<div class="form-group">{{ form_label(form.paymentDate) }}{{ form_widget(form.paymentDate) }}</div>
+		</div>
+		<div class="btn-row">
+			<button type="submit" class="btn btn-gold">{{ icon('dollar-sign') }}
+				Enregistrer</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
 {% endblock %}
