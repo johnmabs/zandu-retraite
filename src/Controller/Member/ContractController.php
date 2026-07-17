@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
@@ -42,10 +43,13 @@ class ContractController extends AbstractController
     }
 
     #[Route('/espace-client/contrat/{id}/signer', name: 'member_contract_sign', methods: ['POST'])]
-    #[IsCsrfTokenValid(new Expression('"contract-sign-" ~ args["contract"].id'))]
-    public function sign(IssuedContract $contract, ContractGenerationService $service): Response
+    public function sign(IssuedContract $contract, Request $request, ContractGenerationService $service): Response
     {
         $this->denyAccessIfNotOwner($contract);
+
+        if (!$this->isCsrfTokenValid('contract-sign-' . $contract->getId(), $request->request->get('_csrf_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
 
         try {
             $service->sign($contract);

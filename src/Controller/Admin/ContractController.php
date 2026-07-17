@@ -8,6 +8,7 @@ use App\Repository\ContractTemplateRepository;
 use App\Service\Contract\ContractGenerationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
@@ -17,10 +18,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ContractController extends AbstractController
 {
     #[Route('/admin/membres/{id}/contrat/emettre', name: 'admin_contract_issue', methods: ['POST'])]
-    #[IsCsrfTokenValid(new Expression('"contract-issue-" ~ args["member"].id'))]
-    public function issue(Member $member, ContractTemplateRepository $templateRepository, ContractGenerationService $service): Response
+    public function issue(Member $member, Request $request, ContractTemplateRepository $templateRepository, ContractGenerationService $service): Response
     {
         $this->denyAccessUnlessGranted(\App\Enum\AdminPermission::ManageMembers);
+
+        if (!$this->isCsrfTokenValid('contract-issue-' . $member->getId(), $request->request->get('_csrf_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
 
         $template = $templateRepository->findActive();
         if (!$template) {

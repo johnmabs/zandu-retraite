@@ -65,10 +65,13 @@ class MemberController extends AbstractController
     }
 
     #[Route('/admin/membres/{id}/valider', name: 'admin_member_approve', methods: ['POST'])]
-    #[IsCsrfTokenValid(new Expression('"member-approve-" ~ args["member"].id'))]
-    public function approve(Member $member, MemberValidationService $validationService): Response
+    public function approve(Member $member, Request $request, MemberValidationService $validationService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);
+
+        if (!$this->isCsrfTokenValid('member-approve-' . $member->getId(), $request->request->get('_csrf_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
 
         /** @var AdminUser $admin */
         $admin = $this->getUser();
@@ -80,10 +83,13 @@ class MemberController extends AbstractController
     }
 
     #[Route('/admin/membres/{id}/rejeter', name: 'admin_member_reject', methods: ['POST'])]
-    #[IsCsrfTokenValid(new Expression('"member-reject-" ~ args["member"].id'))]
     public function reject(Member $member, Request $request, MemberValidationService $validationService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);
+
+        if (!$this->isCsrfTokenValid('member-reject-' . $member->getId(), $request->request->get('_csrf_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
 
         /** @var AdminUser $admin */
         $admin = $this->getUser();
