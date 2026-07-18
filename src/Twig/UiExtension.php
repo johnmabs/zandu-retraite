@@ -41,6 +41,34 @@ final class UiExtension extends AbstractExtension
         'closed' => 'tag-red',
     ];
 
+    private const array EVENT_LABELS = [
+        'member_registered' => 'Nouvelle inscription',
+        'member_updated' => 'Membre modifié',
+        'member_deleted' => 'Membre supprimé',
+        'payment_recorded' => 'Versement enregistré',
+        'payment_failed' => 'Échec de versement',
+        'payment_deleted' => 'Versement supprimé',
+        'payslip_generated' => 'Bulletin généré',
+        'payslip_available' => 'Bulletin disponible',
+        'member_login' => 'Connexion membre',
+        'member_login_failed' => 'Échec de connexion membre',
+        'admin_login' => 'Connexion admin',
+        'admin_login_failed' => 'Échec de connexion admin',
+        'remote_access' => 'Accès distant',
+        'admin_user_updated' => 'Admin modifié',
+        'settings_updated' => 'Paramètres modifiés',
+        'record_deleted' => 'Suppression',
+        'message_sent' => 'Message envoyé',
+        'new_chat_message' => 'Nouveau message',
+        'chat_message_received' => 'Message reçu',
+        'api_call_succeeded' => 'Appel API réussi',
+        'api_call_failed' => 'Échec d\'appel API',
+        'contract_issued' => 'Contrat émis',
+        'registration_submitted' => 'Inscription soumise',
+        'payment_received' => 'Versement reçu',
+        'change_request_submitted' => 'Demande de modification',
+    ];
+
     public function getFunctions(): array
     {
         return [
@@ -53,6 +81,7 @@ final class UiExtension extends AbstractExtension
         return [
             new TwigFilter('initials', $this->initials(...)),
             new TwigFilter('tag_class', fn(string $status): string => self::TAG_CLASSES[$status] ?? 'tag-blue'),
+            new TwigFilter('event_label', fn(string $value): string => self::EVENT_LABELS[$value] ?? $value),
         ];
     }
 
