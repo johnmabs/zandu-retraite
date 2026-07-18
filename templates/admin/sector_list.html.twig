@@ -1,0 +1,49 @@
+{% extends 'layout/app.html.twig' %}
+{% block title %}Secteurs d'activité
+{% endblock %}
+{% block content %}
+	<div class="section-title">Secteurs d'activité</div>
+
+	<div class="btn-row" style="margin-bottom:1rem;">
+		<a href="{{ path('admin_sector_new') }}" class="btn btn-gold">{{ icon('home') }}
+			Nouveau secteur</a>
+	</div>
+
+	{% for sector in sectors %}
+		<div class="card">
+			<div style="display:flex;justify-content:space-between;align-items:center;">
+				<div>
+					<span style="font-weight:600;">{{ sector.name }}</span>
+					<span class="tag tag-blue" style="margin-left:8px;">{{ sector.code }}</span>
+					{% if sector.isOther %}
+						<span class="tag tag-gold" style="margin-left:6px;">Système</span>
+					{% endif %}
+				</div>
+				<div class="btn-row" style="margin:0;">
+					<a href="{{ path('admin_subsector_new', {id: sector.id}) }}" class="btn btn-outline btn-sm">+ Sous-secteur</a>
+					{% if not sector.isOther %}
+						<a href="{{ path('admin_sector_edit', {id: sector.id}) }}" class="btn btn-outline btn-sm">Modifier</a>
+						<form method="post" action="{{ path('admin_sector_delete', {id: sector.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce secteur ?');">
+							<input type="hidden" name="_csrf_token" value="{{ csrf_token('sector-delete-' ~ sector.id) }}">
+							<button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+						</form>
+					{% endif %}
+				</div>
+			</div>
+
+			{% if sector.subSectors|length > 0 %}
+				<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;">
+					{% for sub in sector.subSectors %}
+						<span class="tag tag-green" style="display:inline-flex;align-items:center;gap:6px;">
+							{{ sub.name }}
+							<form method="post" action="{{ path('admin_subsector_delete', {id: sub.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce sous-secteur ?');">
+								<input type="hidden" name="_csrf_token" value="{{ csrf_token('subsector-delete-' ~ sub.id) }}">
+								<button type="submit" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:11px;">✕</button>
+							</form>
+						</span>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+	{% endfor %}
+{% endblock %}

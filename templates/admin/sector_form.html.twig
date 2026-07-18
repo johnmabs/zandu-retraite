@@ -1,0 +1,19 @@
+{% extends 'layout/app.html.twig' %}
+{% block title %}
+	{{ title }}
+{% endblock %}
+{% block content %}
+	<div class="section-title">{{ title }}</div>
+	<div class="card">
+		{{ form_start(form) }}
+		<div class="form-grid">
+			{{ form_row(form.name) }}
+			{{ form_row(form.code) }}
+		</div>
+		<div class="btn-row">
+			<a href="{{ path('admin_sector_list') }}" class="btn btn-outline btn-sm">← Annuler</a>
+			<button type="submit" class="btn btn-gold">Enregistrer</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+{% endblock %}

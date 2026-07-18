@@ -1,0 +1,16 @@
+{% extends 'layout/app.html.twig' %}
+{% block title %}Nouveau sous-secteur
+{% endblock %}
+{% block content %}
+	<div class="section-title">Nouveau sous-secteur —
+		{{ sector.name }}</div>
+	<div class="card">
+		{{ form_start(form) }}
+		{{ form_row(form.name) }}
+		<div class="btn-row">
+			<a href="{{ path('admin_sector_list') }}" class="btn btn-outline btn-sm">← Annuler</a>
+			<button type="submit" class="btn btn-gold">Ajouter</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+{% endblock %}
