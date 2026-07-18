@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Zandu Retraite{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
-    {{ importmap('app') }}
-</head>
-<body>
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="flash flash-{{ label }}">{{ message }}</div>
-        {% endfor %}
-    {% endfor %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Zandu Retraite
+			{% endblock %}
+		</title>
+		{% block stylesheets %}{% endblock %}
+		{{ importmap('app') }}
+	</head>
+	<body>
+		{% block body %}{% endblock %}
 
-    {% block body %}{% endblock %}
+		<div class="toast-stack" {{ stimulus_controller('toast') }}>
+			{% set toast_icons = {success: '✅', error: '⚠️', danger: '⚠️', warning: '⚠️', info: 'ℹ️'} %}
+			{% for label, messages in app.flashes %}
+				{% for message in messages %}
+					<div class="toast flash-{{ label }}" {{ stimulus_target('toast', 'item') }}>
+						<span>{{ toast_icons[label] ?? 'ℹ️' }}</span>
+						<span>{{ message }}</span>
+					</div>
+				{% endfor %}
+			{% endfor %}
+		</div>
 
-    {% block javascripts %}{% endblock %}
-</body>
+		{% block javascripts %}{% endblock %}
+	</body>
 </html>
