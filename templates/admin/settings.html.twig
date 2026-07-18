@@ -1,0 +1,55 @@
+{% extends 'layout/app.html.twig' %}
+{% block title %}Paramètres
+{% endblock %}
+{% block content %}
+	<div class="section-title">Paramètres globaux</div>
+
+	<div class="card">
+		{{ form_start(form) }}
+		<div class="section-title" style="font-size:13px;margin-bottom:0.75rem;">Taux &amp; frais</div>
+		<div class="form-grid col3">
+			{{ form_row(form.defaultPensionRate) }}
+			{{ form_row(form.defaultManagementFeeRate) }}
+			{{ form_row(form.defaultCnssRate) }}
+			{{ form_row(form.registrationFeeAmount) }}
+		</div>
+
+		<div class="section-title" style="font-size:13px;margin:1.5rem 0 0.75rem;">Coordonnées de paiement</div>
+		<div class="form-grid">
+			{{ form_row(form.mtnMomoNumber) }}
+			{{ form_row(form.airtelMoneyNumber) }}
+			{{ form_row(form.bankName) }}
+			{{ form_row(form.bankIban) }}
+		</div>
+
+		<div class="section-title" style="font-size:13px;margin:1.5rem 0 0.75rem;">Environnements API</div>
+		<p style="font-size:12px;color:var(--text3);margin-bottom:10px;">
+			Les clés/secrets ne sont jamais stockés ici — uniquement via le coffre-fort Symfony (variables d'environnement).
+		</p>
+		<div class="form-grid col3">
+			{{ form_row(form.mtnApiEnvironment) }}
+			{{ form_row(form.airtelApiEnvironment) }}
+			{{ form_row(form.cnssApiEnvironment) }}
+		</div>
+
+		<div class="section-title" style="font-size:13px;margin:1.5rem 0 0.75rem;">Paliers de cotisation (FCFA/jour)</div>
+		<div class="form-grid col3">
+			{{ form_row(form.silverMin) }}
+			{{ form_row(form.goldMin) }}
+			{{ form_row(form.platinumMin) }}
+		</div>
+
+		<div class="section-title" style="font-size:13px;margin:1.5rem 0 0.75rem;">Notifications admin</div>
+		<div class="form-grid col3">
+			{{ form_row(form.notifyAdminByEmail) }}
+			{{ form_row(form.notifyAdminBySms) }}
+			{{ form_row(form.notifyAdminByWhatsapp) }}
+		</div>
+
+		<div class="btn-row">
+			<button type="submit" class="btn btn-gold">{{ icon('settings') }}
+				Enregistrer</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+{% endblock %}
