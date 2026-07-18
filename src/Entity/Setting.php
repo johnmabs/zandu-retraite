@@ -84,8 +84,6 @@ class Setting
         return $this->id;
     }
 
-    // ... reste des getters/setters
-
     public function getDefaultPensionRate(): ?string
     {
         return $this->defaultPensionRate;
@@ -266,15 +264,9 @@ class Setting
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    #[ORM\PreUpdate]
+    public function touch(): void
     {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
+        $this->updatedAt = new \DateTimeImmutable();
     }
 }
