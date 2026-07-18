@@ -1,0 +1,79 @@
+{% extends 'layout/app.html.twig' %}
+{% block title %}Alarmes & Notifications
+{% endblock %}
+{% block content %}
+	<div class="section-title">Notifications</div>
+	<div class="card">
+		{% if notifications is empty %}
+			<div class="empty">{{ icon('bell') }}<p>Aucune notification.</p>
+			</div>
+		{% else %}
+			{% for n in notifications %}
+				<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;{{ not loop.last ? 'border-bottom:1px solid rgba(255,255,255,0.05);' }}">
+					<div style="display:flex;align-items:center;gap:10px;">
+						{% if not n.isRead %}
+							<span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;"></span>
+						{% endif %}
+						<div>
+							<div style="font-size:13px;{{ n.isRead ? 'color:var(--text3);' }}">{{ n.message }}</div>
+							<div style="font-size:11px;color:var(--text3);">{{ n.type.value|event_label }}
+								·
+								{{ n.createdAt|date('d/m/Y H:i') }}</div>
+						</div>
+					</div>
+					{% if not n.isRead %}
+						<form method="post" action="{{ path('admin_notification_read', {id: n.id}) }}">
+							<input type="hidden" name="_csrf_token" value="{{ csrf_token('notification-read-' ~ n.id) }}">
+							<button type="submit" class="btn btn-outline btn-sm">Marquer comme lue</button>
+						</form>
+					{% endif %}
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+
+	<div class="section-title" style="margin-top:1.5rem;">Journal d'audit</div>
+	<div class="card">
+		<form method="get" class="form-grid" style="margin-bottom:1rem;">
+			<div class="form-group">
+				<label for="event_type">Type d'événement</label>
+				<select name="event_type" id="event_type" onchange="this.form.submit()">
+					<option value="">-- Tous (visibles par votre rôle) --</option>
+					{% for type in visibleEventTypes %}
+						<option value="{{ type.value }}" {{ app.request.query.get('event_type') == type.value ? 'selected' }}>{{ type.value|event_label }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</form>
+
+		{% if auditLogs.iterator|length == 0 %}
+			<div class="empty">{{ icon('bell') }}<p>Aucun événement à afficher.</p>
+			</div>
+		{% else %}
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Événement</th>
+							<th>Description</th>
+							<th>Auteur</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for log in auditLogs %}
+							<tr>
+								<td>{{ log.createdAt|date('d/m/Y H:i') }}</td>
+								<td>
+									<span class="tag tag-blue">{{ log.eventType.value|event_label }}</span>
+								</td>
+								<td>{{ log.description }}</td>
+								<td>{{ log.actorAdmin ? log.actorAdmin.fullName : (log.actorMember ? log.actorMember.fullName : 'Système') }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}
