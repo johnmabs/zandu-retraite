@@ -6,6 +6,7 @@ use App\Entity\Sector;
 use App\Enum\MemberStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /**
  * @extends ServiceEntityRepository<Sector>
@@ -39,7 +40,7 @@ class SectorRepository extends ServiceEntityRepository
 
         if ($excludeSector) {
             $qb->andWhere('s.id != :excludeId')
-                ->setParameter('excludeId', $excludeSector->getId());
+                ->setParameter('excludeId', $excludeSector->getId(), UuidType::NAME);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;

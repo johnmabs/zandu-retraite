@@ -9,6 +9,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /**
  * @extends ServiceEntityRepository<Member>
@@ -25,20 +26,6 @@ class MemberRepository extends ServiceEntityRepository
         return $this->findOneBy(['phone' => $phone]);
     }
 
-    public function phoneExists(string $phone, ?Member $excludeMember = null): bool
-    {
-        $qb = $this->createQueryBuilder('m')
-            ->select('COUNT(m.id)')
-            ->andWhere('m.phone = :phone')
-            ->setParameter('phone', $phone);
-
-        if ($excludeMember) {
-            $qb->andWhere('m.id != :excludeId')
-                ->setParameter('excludeId', $excludeMember->getId());
-        }
-
-        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
-    }
 
     public function findPendingRegistrations(int $limit = 50): array
     {
@@ -51,12 +38,27 @@ class MemberRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function phoneExists(string $phone, ?Member $excludeMember = null): bool
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->andWhere('m.phone = :phone')
+            ->setParameter('phone', $phone);
+
+        if ($excludeMember) {
+            $qb->andWhere('m.id != :excludeId')
+                ->setParameter('excludeId', $excludeMember->getId(), UuidType::NAME);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
     public function findActiveBySector(Sector $sector): array
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.sector = :sector')
             ->andWhere('m.status = :status')
-            ->setParameter('sector', $sector)
+            ->setParameter('sector', $sector->getId(), UuidType::NAME)
             ->setParameter('status', MemberStatus::Active->value)
             ->orderBy('m.lastName', 'ASC')
             ->getQuery()
@@ -83,8 +85,8 @@ class MemberRepository extends ServiceEntityRepository
         }
 
         if ($sector) {
-            $qb->andWhere('m.sector = :sector')->setParameter('sector', $sector);
-        }
+    $qb->andWhere('m.sector = :sector')->setParameter('sector', $sector->getId(), UuidType::NAME);
+}
 
         if ($searchTerm) {
             $qb->andWhere('m.firstName LIKE :term OR m.lastName LIKE :term OR m.memberNumber LIKE :term OR m.phone LIKE :term')

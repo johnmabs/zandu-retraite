@@ -9,6 +9,7 @@ use App\Enum\PaymentStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /**
  * @extends ServiceEntityRepository<Payment>
@@ -24,7 +25,7 @@ class PaymentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.member = :member')
-            ->setParameter('member', $member)
+            ->setParameter('member', $member->getId(), UuidType::NAME)
             ->orderBy('p.paymentDate', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage);
@@ -41,7 +42,7 @@ class PaymentRepository extends ServiceEntityRepository
             ->andWhere('p.member = :member')
             ->andWhere('p.status = :status')
             ->andWhere('p.paymentDate BETWEEN :start AND :end')
-            ->setParameter('member', $member)
+            ->setParameter('member', $member->getId(), UuidType::NAME)
             ->setParameter('status', PaymentStatus::Confirmed->value)
             ->setParameter('start', $periodStart)
             ->setParameter('end', $periodEnd)
@@ -56,7 +57,7 @@ class PaymentRepository extends ServiceEntityRepository
             ->select('COALESCE(SUM(p.amount), 0) AS total')
             ->andWhere('p.member = :member')
             ->andWhere('p.status = :status')
-            ->setParameter('member', $member)
+            ->setParameter('member', $member->getId(), UuidType::NAME)
             ->setParameter('status', PaymentStatus::Confirmed->value)
             ->getQuery()
             ->getSingleScalarResult();
@@ -98,7 +99,7 @@ class PaymentRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->andWhere('p.member = :member')
             ->andWhere('p.status = :status')
-            ->setParameter('member', $member)
+            ->setParameter('member', $member->getId(), UuidType::NAME)
             ->setParameter('status', PaymentStatus::Confirmed->value)
             ->orderBy('p.paymentDate', 'DESC')
             ->setMaxResults(1)

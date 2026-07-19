@@ -11,6 +11,7 @@ use App\Security\AuditVisibilityResolver;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /**
  * @extends ServiceEntityRepository<AuditLog>
@@ -82,7 +83,7 @@ class AuditLogRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.actorAdmin = :admin')
-            ->setParameter('admin', $admin)
+            ->setParameter('admin', $admin->getId(), UuidType::NAME)
             ->orderBy('a.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
@@ -93,7 +94,7 @@ class AuditLogRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.actorMember = :member')
-            ->setParameter('member', $member)
+            ->setParameter('member', $member->getId(), UuidType::NAME)
             ->orderBy('a.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
