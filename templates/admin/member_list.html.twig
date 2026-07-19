@@ -24,7 +24,7 @@
 				<select id="sector" name="sector">
 					<option value="">-- Tous --</option>
 					{% for sector in sectors %}
-						<option value="{{ sector.id }}" {{ app.request.query.get('sector') == sector.id|string ? 'selected' }}>{{ sector.name }}</option>
+						<option value="{{ sector.id }}" {{ app.request.query.get('sector') == ('' ~ sector.id) ? 'selected' }}>{{ sector.name }}</option>
 					{% endfor %}
 				</select>
 			</div>

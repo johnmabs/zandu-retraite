@@ -24,29 +24,15 @@ class AuditLogRepository extends ServiceEntityRepository
         parent::__construct($registry, AuditLog::class);
     }
 
-    /**
-     * Écrit une entrée d'audit. AuditLog est immuable : cette méthode ne sert
-     * qu'à la création, jamais à la modification. Le flush immédiat (plutôt
-     * qu'un persist() différé) garantit que l'entrée est bien écrite même si
-     * une exception survient plus tard dans la même requête HTTP.
-     */
     public function record(AuditLog $auditLog): void
     {
         $this->getEntityManager()->persist($auditLog);
         $this->getEntityManager()->flush();
     }
 
-    /**
-     * Liste paginée filtrée par la matrice de visibilité du rôle — c'est ici
-     * qu'AuditVisibilityResolver::visibleTypesFor() est réellement exploité :
-     * un WHERE event_type IN (...) construit en base, pas un filtrage a
-     * posteriori en PHP sur une table qui grossit vite.
-     *
-     * @return Paginator<AuditLog>
-     */
     public function findVisibleFor(AdminRole $role, int $page = 1, int $perPage = 50): Paginator
     {
-        $visibleTypes = $this->visibilityResolver->visibleTypesFor($role);
+        $visibleTypes = array_map(fn(AuditEventType $t) => $t->value, $this->visibilityResolver->visibleTypesFor($role));
 
         $qb = $this->createQueryBuilder('a')
             ->andWhere('a.eventType IN (:types)')
@@ -58,16 +44,6 @@ class AuditLogRepository extends ServiceEntityRepository
         return new Paginator($qb->getQuery());
     }
 
-    /**
-     * Même filtrage que findVisibleFor(), avec en plus un filtre par type
-     * précis et/ou par plage de dates — pour les écrans de recherche d'audit.
-     * Le type demandé est automatiquement restreint à l'intersection avec ce
-     * que le rôle peut voir : si un type hors périmètre est demandé, on
-     * renvoie un résultat vide plutôt qu'une erreur, pour ne jamais fuiter
-     * l'information "ce type d'événement existe" à un rôle qui n'y a pas accès.
-     *
-     * @return Paginator<AuditLog>
-     */
     public function search(
         AdminRole $viewerRole,
         ?AuditEventType $eventType = null,
@@ -82,9 +58,11 @@ class AuditLogRepository extends ServiceEntityRepository
             $visibleTypes = \in_array($eventType, $visibleTypes, true) ? [$eventType] : [];
         }
 
+        $visibleTypeValues = array_map(fn(AuditEventType $t) => $t->value, $visibleTypes);
+
         $qb = $this->createQueryBuilder('a')
             ->andWhere('a.eventType IN (:types)')
-            ->setParameter('types', $visibleTypes)
+            ->setParameter('types', $visibleTypeValues)
             ->orderBy('a.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage);
@@ -100,7 +78,6 @@ class AuditLogRepository extends ServiceEntityRepository
         return new Paginator($qb->getQuery());
     }
 
-    // Historique d'audit lié à un admin précis (ses propres actions), utile en cas d'investigation
     public function findByActorAdmin(AdminUser $admin, int $limit = 100): array
     {
         return $this->createQueryBuilder('a')
@@ -112,7 +89,6 @@ class AuditLogRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // Historique d'audit lié à un membre précis, utile pour une fiche membre détaillée côté admin
     public function findByActorMember(Member $member, int $limit = 100): array
     {
         return $this->createQueryBuilder('a')
@@ -124,8 +100,6 @@ class AuditLogRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // Tentatives de connexion échouées récentes pour une IP donnée, en complément du login_throttling
-    // (celui-ci bloque déjà les tentatives, ceci sert à l'investigation/alerting a posteriori)
     public function countRecentFailedLoginsByIp(string $ipAddress, \DateTimeImmutable $since): int
     {
         return (int) $this->createQueryBuilder('a')
@@ -133,7 +107,7 @@ class AuditLogRepository extends ServiceEntityRepository
             ->andWhere('a.eventType IN (:types)')
             ->andWhere('a.ipAddress = :ip')
             ->andWhere('a.createdAt >= :since')
-            ->setParameter('types', [AuditEventType::MemberLoginFailed, AuditEventType::AdminLoginFailed])
+            ->setParameter('types', [AuditEventType::MemberLoginFailed->value, AuditEventType::AdminLoginFailed->value])
             ->setParameter('ip', $ipAddress)
             ->setParameter('since', $since)
             ->getQuery()

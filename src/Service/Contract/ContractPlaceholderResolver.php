@@ -38,6 +38,7 @@ final class ContractPlaceholderResolver
             '{frais_inscription}' => ($member->getRegistrationFeeAmount() ?? $setting->getRegistrationFeeAmount()) . ' FCFA',
             '{capital_estime}' => $this->financialCalculator->estimateCapital($member) . ' FCFA',
             '{categorie}' => $member->getSalaryCategory()->value,
+            '{beneficiaire}' => $member->getBeneficiary()->name ?: 'Non désigné',
         ];
 
         return strtr($templateBody, $replacements);

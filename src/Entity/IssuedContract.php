@@ -120,4 +120,10 @@ class IssuedContract
 
         return $this;
     }
+
+    public function sign(): static
+    {
+        $this->signedAt = new \DateTimeImmutable();
+        return $this;
+    }
 }

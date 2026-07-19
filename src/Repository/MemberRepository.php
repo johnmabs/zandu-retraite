@@ -25,7 +25,6 @@ class MemberRepository extends ServiceEntityRepository
         return $this->findOneBy(['phone' => $phone]);
     }
 
-    // Utilisé par le formulaire d'inscription pour valider l'unicité avant soumission
     public function phoneExists(string $phone, ?Member $excludeMember = null): bool
     {
         $qb = $this->createQueryBuilder('m')
@@ -41,35 +40,30 @@ class MemberRepository extends ServiceEntityRepository
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
 
-    // Inscriptions en attente de validation par un admin, les plus anciennes en premier
     public function findPendingRegistrations(int $limit = 50): array
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.status = :status')
-            ->setParameter('status', MemberStatus::Pending)
+            ->setParameter('status', MemberStatus::Pending->value)
             ->orderBy('m.createdAt', 'ASC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
 
-    // Membres actifs d'un secteur donné, pour les écrans de gestion admin filtrés par secteur
     public function findActiveBySector(Sector $sector): array
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.sector = :sector')
             ->andWhere('m.status = :status')
             ->setParameter('sector', $sector)
-            ->setParameter('status', MemberStatus::Active)
+            ->setParameter('status', MemberStatus::Active->value)
             ->orderBy('m.lastName', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Recherche paginée pour l'écran admin "Gestion des clients" : filtre combiné
-     * statut / secteur / texte libre (nom, numéro de membre, téléphone).
-     *
      * @return Paginator<Member>
      */
     public function search(
@@ -85,7 +79,7 @@ class MemberRepository extends ServiceEntityRepository
             ->orderBy('m.createdAt', 'DESC');
 
         if ($status) {
-            $qb->andWhere('m.status = :status')->setParameter('status', $status);
+            $qb->andWhere('m.status = :status')->setParameter('status', $status->value);
         }
 
         if ($sector) {
@@ -103,7 +97,6 @@ class MemberRepository extends ServiceEntityRepository
         return new Paginator($qb->getQuery());
     }
 
-    // Répartition des membres par statut, pour les compteurs du dashboard admin
     public function countByStatus(): array
     {
         $rows = $this->createQueryBuilder('m')
@@ -112,16 +105,15 @@ class MemberRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
 
-        // Réindexe par valeur de statut pour un accès direct côté template/service
         $counts = array_fill_keys(array_map(fn(MemberStatus $s) => $s->value, MemberStatus::cases()), 0);
         foreach ($rows as $row) {
+            // m.status est hydraté en enumType: retourne déjà un MemberStatus ici (SELECT, pas WHERE)
             $counts[$row['status']->value] = (int) $row['total'];
         }
 
         return $counts;
     }
 
-    // Prochain numéro fonctionnel disponible (MR-0001, MR-0002...), utilisé par le service d'inscription
     public function findLastMemberNumber(): ?string
     {
         $result = $this->createQueryBuilder('m')
@@ -134,13 +126,11 @@ class MemberRepository extends ServiceEntityRepository
         return $result['memberNumber'] ?? null;
     }
 
-    // Utilisé par la génération en lot. toIterable() évite de charger tous les
-    // membres actifs en mémoire d'un coup si leur nombre devient important.
     public function findAllActive(): iterable
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.status = :status')
-            ->setParameter('status', MemberStatus::Active)
+            ->setParameter('status', MemberStatus::Active->value)
             ->getQuery()
             ->toIterable();
     }

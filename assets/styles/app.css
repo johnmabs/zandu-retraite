@@ -581,25 +581,45 @@ tbody td {
 }
 
 /* ── TOAST / FLASH ── */
-.toast {
+.toast-stack {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 360px;
+}
+.toast {
     background: var(--deep2);
     border: 1px solid rgba(201, 168, 76, 0.3);
     color: var(--text);
     padding: 10px 18px;
     border-radius: 8px;
-    font-size: 13px;
-    z-index: 999;
+    font-size: 1rem;
+    display: flex;
     align-items: center;
     gap: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
-.toast.flash-error {
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast.flash-error,
+.toast.flash-danger {
     border-color: rgba(226, 75, 74, 0.4);
 }
 .toast.flash-success {
     border-color: rgba(29, 158, 117, 0.4);
+}
+.toast.flash-warning {
+    border-color: rgba(239, 159, 39, 0.4);
 }
 
 /* ── SCROLLBAR ── */

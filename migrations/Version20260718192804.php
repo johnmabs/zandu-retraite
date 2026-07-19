@@ -11,7 +11,7 @@ use Symfony\Component\Uid\Uuid;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260714104457 extends AbstractMigration
+final class Version20260718192804 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -32,6 +32,5 @@ final class Version20260714104457 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql("DELETE FROM sector WHERE code = 'AUTRE'");
-        $this->addSql('ALTER TABLE sector DROP is_other');
     }
 }
