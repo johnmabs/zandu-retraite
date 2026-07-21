@@ -13,12 +13,6 @@ use App\Factory\MemberFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-/**
- * Couvre la régression #[IsCsrfTokenValid] (redirection silencieuse vers
- * le login au lieu d'un 403 sur token invalide — voir récapitulatif §9) :
- * en soumettant le vrai formulaire rendu (avec son vrai token généré),
- * ce test échoue si la vérification CSRF casse à nouveau silencieusement.
- */
 class PaymentApprovalTest extends WebTestCase
 {
     use Factories;
@@ -47,6 +41,8 @@ class PaymentApprovalTest extends WebTestCase
         $em->persist($payment);
         $em->flush();
 
+        $paymentId = $payment->getId();
+
         $client->loginUser($admin, 'admin_area');
 
         $client->request('GET', '/admin/payments/pending');
@@ -56,7 +52,15 @@ class PaymentApprovalTest extends WebTestCase
 
         self::assertResponseRedirects('/admin/payments/pending');
 
-        $em->refresh($payment);
-        self::assertSame(PaymentStatus::Confirmed, $payment->getStatus());
+        // Le kernel redémarre à chaque requête HTTP du client de test : on ne
+        // peut pas fiabiliser $em/$payment capturés avant la requête (l'ancien
+        // EntityManager est fermé). On récupère un EntityManager frais et on
+        // re-fetch par id plutôt que d'appeler refresh() sur une référence
+        // potentiellement obsolète.
+        $freshEm = self::getContainer()->get('doctrine')->getManager();
+        $refreshedPayment = $freshEm->getRepository(Payment::class)->find($paymentId);
+
+        self::assertNotNull($refreshedPayment);
+        self::assertSame(PaymentStatus::Confirmed, $refreshedPayment->getStatus());
     }
 }
