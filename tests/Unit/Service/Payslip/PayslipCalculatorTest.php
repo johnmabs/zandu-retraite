@@ -12,7 +12,7 @@ class PayslipCalculatorTest extends TestCase
 {
     public function testCalculateSplitsGrossAmountAccordingToRates(): void
     {
-        $rateResolver = $this->createMock(MemberRateResolverInterface::class);
+        $rateResolver = $this->createStub(MemberRateResolverInterface::class);
         $rateResolver->method('resolve')->willReturn([
             'pension' => '70.00',
             'management' => '15.00',
@@ -29,16 +29,16 @@ class PayslipCalculatorTest extends TestCase
         $result = $calculator->calculate(new Member(), [$payment1, $payment2]);
 
         self::assertSame('3000.00', $result->grossAmount);
-        self::assertSame('2100.00', $result->pensionShareAmount); // 70% de 3000
-        self::assertSame('450.00', $result->managementFeeAmount); // 15%
-        self::assertSame('300.00', $result->cnssContributionAmount); // 10%
-        self::assertSame('2100.00', $result->netAmount); // = part retraite, sémantique confirmée étape 2.8
+        self::assertSame('2100.00', $result->pensionShareAmount);
+        self::assertSame('450.00', $result->managementFeeAmount);
+        self::assertSame('300.00', $result->cnssContributionAmount);
+        self::assertSame('2100.00', $result->netAmount);
         self::assertSame(2, $result->paymentsCount);
     }
 
     public function testCalculateWithNoPaymentsReturnsZero(): void
     {
-        $rateResolver = $this->createMock(MemberRateResolverInterface::class);
+        $rateResolver = $this->createStub(MemberRateResolverInterface::class);
         $rateResolver->method('resolve')->willReturn(['pension' => '70.00', 'management' => '15.00', 'cnss' => '10.00']);
 
         $result = (new PayslipCalculator($rateResolver))->calculate(new Member(), []);

@@ -15,10 +15,10 @@ class MemberFinancialCalculatorTest extends TestCase
 {
     public function testEstimateCapitalUsesSimpleProjectionFormula(): void
     {
-        $rateResolver = $this->createMock(MemberRateResolverInterface::class);
+        $rateResolver = $this->createStub(MemberRateResolverInterface::class);
         $rateResolver->method('resolve')->willReturn(['pension' => '70.00', 'management' => '15.00', 'cnss' => '10.00']);
 
-        $settingRepository = $this->createMock(SettingRepository::class);
+        $settingRepository = $this->createStub(SettingRepository::class);
 
         $calculator = new MemberFinancialCalculator($settingRepository, $rateResolver);
 
@@ -26,7 +26,6 @@ class MemberFinancialCalculatorTest extends TestCase
         $member->setDailyPaymentAmount('1000.00');
         $member->setEngagementDuration(EngagementDuration::TenYears);
 
-        // 1000 x 365 x 10 x 70% = 2 555 000.00
         self::assertSame('2555000.00', $calculator->estimateCapital($member));
     }
 
@@ -40,10 +39,10 @@ class MemberFinancialCalculatorTest extends TestCase
             'platinum' => ['min' => 10000, 'max' => null],
         ]);
 
-        $settingRepository = $this->createMock(SettingRepository::class);
+        $settingRepository = $this->createStub(SettingRepository::class);
         $settingRepository->method('getOrCreate')->willReturn($setting);
 
-        $calculator = new MemberFinancialCalculator($settingRepository, $this->createMock(MemberRateResolverInterface::class));
+        $calculator = new MemberFinancialCalculator($settingRepository, $this->createStub(MemberRateResolverInterface::class));
 
         self::assertSame(SalaryCategory::Bronze, $calculator->resolveSalaryCategory('1500.00'));
         self::assertSame(SalaryCategory::Silver, $calculator->resolveSalaryCategory('3000.00'));
