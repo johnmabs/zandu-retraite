@@ -22,10 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Route('/espace-client/inscription')]
+#[Route('/member-area/registration')]
 class RegistrationWizardController extends AbstractController
 {
-    #[Route('/etape/1', name: 'member_registration_step1')]
+    #[Route('/step/1', name: 'member_registration_step1')]
     public function step1(Request $request, RegistrationWizardSession $wizard, SectorRepository $sectorRepository, SubSectorRepository $subSectorRepository): Response
     {
         $stored = $wizard->get('step1') ?? [];
@@ -98,7 +98,7 @@ class RegistrationWizardController extends AbstractController
         ]);
     }
 
-    #[Route('/etape/2', name: 'member_registration_step2')]
+    #[Route('/step/2', name: 'member_registration_step2')]
     public function step2(Request $request, RegistrationWizardSession $wizard, SettingRepository $settingRepository): Response
     {
         if (!$wizard->hasStep('step1')) {
@@ -126,7 +126,7 @@ class RegistrationWizardController extends AbstractController
         ]);
     }
 
-    #[Route('/etape/3', name: 'member_registration_step3')]
+    #[Route('/step/3', name: 'member_registration_step3')]
     public function step3(Request $request, RegistrationWizardSession $wizard, SettingRepository $settingRepository): Response
     {
         if (!$wizard->hasStep('step2')) {
@@ -148,7 +148,7 @@ class RegistrationWizardController extends AbstractController
         ]);
     }
 
-    #[Route('/etape/4', name: 'member_registration_step4')]
+    #[Route('/step/4', name: 'member_registration_step4')]
     public function step4(
         Request $request,
         RegistrationWizardSession $wizard,
@@ -218,6 +218,14 @@ class RegistrationWizardController extends AbstractController
             'step1' => $step1,
             'step2' => $step2,
             'step3' => $step3,
+        ]);
+    }
+
+    #[Route('/succes/{memberNumber}', name: 'member_registration_success')]
+    public function success(string $memberNumber): Response
+    {
+        return $this->render('member/registration_success.html.twig', [
+            'memberNumber' => $memberNumber,
         ]);
     }
 }

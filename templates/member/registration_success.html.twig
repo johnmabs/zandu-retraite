@@ -1,10 +1,17 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Inscription enregistrée{% endblock %}
-
+{% block title %}Inscription enregistrée
+{% endblock %}
 {% block body %}
-    <h1>Inscription enregistrée</h1>
-    <p>Votre numéro de membre : <strong>{{ memberNumber }}</strong></p>
-    <p>Votre inscription sera examinée par un administrateur avant activation.</p>
-    <a href="{{ path('member_login') }}">Retour à la connexion</a>
+	<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;">
+		<div class="card" style="width:100%;max-width:420px;text-align:center;">
+			<div style="font-size:40px;margin-bottom:12px;">✅</div>
+			<h1 style="color:var(--gold);font-size:20px;margin-bottom:10px;">Inscription enregistrée</h1>
+			<p style="color:var(--text2);font-size:13px;margin-bottom:4px;">Votre numéro de membre :</p>
+			<p style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;">{{ memberNumber }}</p>
+			<p style="color:var(--text2);font-size:13px;margin-bottom:20px;">
+				Votre inscription sera examinée par un administrateur avant activation de votre compte.
+			</p>
+			<a href="{{ path('member_login') }}" class="btn btn-gold" style="width:100%;justify-content:center;">Retour à la connexion</a>
+		</div>
+	</div>
 {% endblock %}
