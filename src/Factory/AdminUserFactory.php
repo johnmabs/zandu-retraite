@@ -6,12 +6,12 @@ use App\Entity\AdminUser;
 use App\Enum\AdminPermission;
 use App\Enum\AdminRole;
 use App\Enum\AdminStatus;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<AdminUser>
+ * @extends PersistentObjectFactory<AdminUser>
  */
-final class AdminUserFactory extends PersistentProxyObjectFactory
+final class AdminUserFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

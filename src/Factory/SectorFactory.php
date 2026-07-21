@@ -3,12 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\Sector;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Sector>
+ * @extends PersistentObjectFactory<Sector>
  */
-final class SectorFactory extends PersistentProxyObjectFactory
+final class SectorFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

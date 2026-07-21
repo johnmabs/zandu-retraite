@@ -5,12 +5,12 @@ namespace App\Factory;
 use App\Entity\Member;
 use App\Enum\MemberStatus;
 use App\Enum\SalaryCategory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Member>
+ * @extends PersistentObjectFactory<Member>
  */
-final class MemberFactory extends PersistentProxyObjectFactory
+final class MemberFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {
