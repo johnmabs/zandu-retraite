@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Enum\AdminPermission;
@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class SettingController extends AbstractController
 {
-    #[Route('/admin/parametres', name: 'admin_settings')]
+    #[Route('/admin/settings', name: 'admin_settings')]
     public function edit(
         Request $request,
         SettingRepository $settingRepository,

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Entity\Sector;
@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
-#[Route('/admin/secteurs')]
+#[Route('/admin/sectors')]
 class SectorController extends AbstractController
 {
     #[Route('', name: 'admin_sector_list')]
@@ -32,7 +32,7 @@ class SectorController extends AbstractController
         ]);
     }
 
-    #[Route('/nouveau', name: 'admin_sector_new')]
+    #[Route('/new', name: 'admin_sector_new')]
     public function new(Request $request, EntityManagerInterface $em, DomainEventRecorder $eventRecorder): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::EditSettings);
@@ -61,7 +61,7 @@ class SectorController extends AbstractController
         return $this->render('admin/sector_form.html.twig', ['form' => $form, 'title' => 'Nouveau secteur']);
     }
 
-    #[Route('/{id}/modifier', name: 'admin_sector_edit')]
+    #[Route('/{id}/edit', name: 'admin_sector_edit')]
     public function edit(Sector $sector, Request $request, EntityManagerInterface $em, DomainEventRecorder $eventRecorder): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::EditSettings);
@@ -88,7 +88,7 @@ class SectorController extends AbstractController
         return $this->render('admin/sector_form.html.twig', ['form' => $form, 'title' => 'Modifier ' . $sector->getName(), 'sector' => $sector]);
     }
 
-    #[Route('/{id}/supprimer', name: 'admin_sector_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'admin_sector_delete', methods: ['POST'])]
     public function delete(Sector $sector, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::EditSettings);
@@ -125,7 +125,7 @@ class SectorController extends AbstractController
         return $this->redirectToRoute('admin_sector_list');
     }
 
-    #[Route('/{id}/sous-secteurs/nouveau', name: 'admin_subsector_new')]
+    #[Route('/{id}/sub-sectors/new', name: 'admin_subsector_new')]
     public function newSubSector(Sector $sector, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::EditSettings);
@@ -148,7 +148,7 @@ class SectorController extends AbstractController
         return $this->render('admin/subsector_form.html.twig', ['form' => $form, 'sector' => $sector]);
     }
 
-    #[Route('/sous-secteurs/{id}/supprimer', name: 'admin_subsector_delete', methods: ['POST'])]
+    #[Route('/sub-sectors/{id}/delete', name: 'admin_subsector_delete', methods: ['POST'])]
     public function deleteSubSector(SubSector $subSector, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::EditSettings);

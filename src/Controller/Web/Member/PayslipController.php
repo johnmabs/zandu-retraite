@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Member;
+namespace App\Controller\Web\Member;
 
 use App\Entity\Member;
 use App\Entity\Payslip;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_MEMBER')]
 class PayslipController extends AbstractController
 {
-    #[Route('/espace-client/bulletins', name: 'member_payslip_list')]
+    #[Route('/member-area/payslips', name: 'member_payslip_list')]
     public function list(PayslipRepository $payslipRepository): \Symfony\Component\HttpFoundation\Response
     {
         /** @var Member $member */
@@ -26,7 +26,7 @@ class PayslipController extends AbstractController
         ]);
     }
 
-    #[Route('/espace-client/bulletins/{id}/telecharger', name: 'member_payslip_download')]
+    #[Route('/member-area/payslips/{id}/download', name: 'member_payslip_download')]
     public function download(
         Payslip $payslip,
         #[Autowire(param: 'payslip_storage_dir')] string $storageDir,

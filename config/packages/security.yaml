@@ -21,6 +21,11 @@ security:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
 
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
         admin_area:
             pattern: ^/admin
             lazy: true
@@ -41,7 +46,7 @@ security:
                 interval: "15 minutes"
 
         member_area:
-            pattern: ^/espace-client
+            pattern: ^/member-area
             lazy: true
             provider: member_provider
             user_checker: App\Security\MemberUserChecker

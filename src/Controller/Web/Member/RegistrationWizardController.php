@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Member;
+namespace App\Controller\Web\Member;
 
 use App\Entity\Embeddable\ActivityLocation;
 use App\Entity\Embeddable\Address;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Member;
+namespace App\Controller\Web\Member;
 
 use App\Entity\Member;
 use App\Repository\PaymentRepository;
@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DashboardController extends AbstractController
 {
-    #[Route('/espace-client', name: 'member_dashboard')]
+    #[Route('/member-area', name: 'member_dashboard')]
     #[IsGranted('ROLE_MEMBER')]
     public function index(PaymentRepository $paymentRepository): Response
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Entity\Member;
@@ -11,17 +11,15 @@ use App\Repository\PaymentRepository;
 use App\Repository\SectorRepository;
 use App\Service\MemberValidationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
 class MemberController extends AbstractController
 {
-    #[Route('/admin/membres', name: 'admin_member_list')]
+    #[Route('/admin/members', name: 'admin_member_list')]
     public function list(Request $request, MemberRepository $memberRepository, SectorRepository $sectorRepository): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageMembers);
@@ -43,7 +41,7 @@ class MemberController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/membres/en-attente', name: 'admin_member_pending')]
+    #[Route('/admin/members/pending', name: 'admin_member_pending')]
     public function pending(MemberRepository $memberRepository): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);
@@ -53,7 +51,7 @@ class MemberController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/membres/{id}', name: 'admin_member_detail')]
+    #[Route('/admin/members/{id}', name: 'admin_member_detail')]
     public function detail(Member $member, PaymentRepository $paymentRepository): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageMembers);
@@ -64,7 +62,7 @@ class MemberController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/membres/{id}/valider', name: 'admin_member_approve', methods: ['POST'])]
+    #[Route('/admin/members/{id}/approve', name: 'admin_member_approve', methods: ['POST'])]
     public function approve(Member $member, Request $request, MemberValidationService $validationService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);
@@ -82,7 +80,7 @@ class MemberController extends AbstractController
         return $this->redirectToRoute('admin_member_pending');
     }
 
-    #[Route('/admin/membres/{id}/rejeter', name: 'admin_member_reject', methods: ['POST'])]
+    #[Route('/admin/members/{id}/reject', name: 'admin_member_reject', methods: ['POST'])]
     public function reject(Member $member, Request $request, MemberValidationService $validationService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManageRegistrations);

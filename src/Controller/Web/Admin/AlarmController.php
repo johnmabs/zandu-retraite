@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Entity\Notification;
@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class AlarmController extends AbstractController
 {
-    #[Route('/admin/alarmes', name: 'admin_alarms')]
+    #[Route('/admin/alarms', name: 'admin_alarms')]
     public function index(
         Request $request,
         NotificationRepository $notificationRepository,
@@ -46,7 +46,7 @@ class AlarmController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/notifications/{id}/lue', name: 'admin_notification_read', methods: ['POST'])]
+    #[Route('/admin/notifications/{id}/read', name: 'admin_notification_read', methods: ['POST'])]
     public function markRead(Notification $notification, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::GlobalView);

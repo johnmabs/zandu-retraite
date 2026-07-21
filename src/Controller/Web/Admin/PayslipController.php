@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Entity\Member;
@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class PayslipController extends AbstractController
 {
-    #[Route('/admin/membres/{id}/bulletin/generer', name: 'admin_payslip_generate', methods: ['POST'])]
+    #[Route('/admin/members/{id}/payslip/generate', name: 'admin_payslip_generate', methods: ['POST'])]
     public function generate(Member $member, Request $request, PayslipGenerationService $service): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayslips);
@@ -39,7 +39,7 @@ class PayslipController extends AbstractController
         return $this->redirectToRoute('admin_member_detail', ['id' => $member->getId()]);
     }
 
-    #[Route('/admin/bulletins/generer-lot', name: 'admin_payslip_generate_batch')]
+    #[Route('/admin/payslip/generate-batch', name: 'admin_payslip_generate_batch')]
     public function generateBatch(
         Request $request,
         MemberRepository $memberRepository,

@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Entity\Member;
 use App\Repository\ContractTemplateRepository;
 use App\Service\Contract\ContractGenerationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
 class ContractController extends AbstractController
 {
-    #[Route('/admin/membres/{id}/contrat/emettre', name: 'admin_contract_issue', methods: ['POST'])]
+    #[Route('/admin/members/{id}/contract/issue', name: 'admin_contract_issue', methods: ['POST'])]
     public function issue(Member $member, Request $request, ContractTemplateRepository $templateRepository, ContractGenerationService $service): Response
     {
         $this->denyAccessUnlessGranted(\App\Enum\AdminPermission::ManageMembers);

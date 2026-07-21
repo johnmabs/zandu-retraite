@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Member;
+namespace App\Controller\Web\Member;
 
 use App\Entity\IssuedContract;
 use App\Entity\Member;
@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_MEMBER')]
 class ContractController extends AbstractController
 {
-    #[Route('/espace-client/contrat', name: 'member_contract_list')]
+    #[Route('/member-area/contract', name: 'member_contract_list')]
     public function list(IssuedContractRepository $repository): Response
     {
         /** @var Member $member */
@@ -29,7 +29,7 @@ class ContractController extends AbstractController
         ]);
     }
 
-    #[Route('/espace-client/contrat/{id}/telecharger', name: 'member_contract_download')]
+    #[Route('/member-area/contract/{id}/download', name: 'member_contract_download')]
     public function download(IssuedContract $contract, #[Autowire(param: 'contract_storage_dir')] string $storageDir): BinaryFileResponse
     {
         $this->denyAccessIfNotOwner($contract);
@@ -40,7 +40,7 @@ class ContractController extends AbstractController
         return $response;
     }
 
-    #[Route('/espace-client/contrat/{id}/signer', name: 'member_contract_sign', methods: ['POST'])]
+    #[Route('/member-area/contrat/{id}/sign', name: 'member_contract_sign', methods: ['POST'])]
     public function sign(IssuedContract $contract, Request $request, ContractGenerationService $service): Response
     {
         $this->denyAccessIfNotOwner($contract);

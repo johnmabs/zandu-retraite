@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Entity\AdminUser;
 use App\Entity\Member;
@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class PaymentController extends AbstractController
 {
-    #[Route('/admin/versements/en-attente', name: 'admin_payment_review_queue')]
+    #[Route('/admin/payments/pending', name: 'admin_payment_review_queue')]
     public function reviewQueue(PaymentRepository $paymentRepository): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayments);
@@ -27,7 +27,7 @@ class PaymentController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/versements/{id}/valider', name: 'admin_payment_approve', methods: ['POST'])]
+    #[Route('/admin/payments/{id}/approve', name: 'admin_payment_approve', methods: ['POST'])]
     public function approve(Payment $payment, Request $request, PaymentService $paymentService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayments);
@@ -45,7 +45,7 @@ class PaymentController extends AbstractController
         return $this->redirectToRoute('admin_payment_review_queue');
     }
 
-    #[Route('/admin/versements/{id}/rejeter', name: 'admin_payment_reject', methods: ['POST'])]
+    #[Route('/admin/payments/{id}/reject', name: 'admin_payment_reject', methods: ['POST'])]
     public function reject(Payment $payment, Request $request, PaymentService $paymentService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayments);
@@ -63,7 +63,7 @@ class PaymentController extends AbstractController
         return $this->redirectToRoute('admin_payment_review_queue');
     }
 
-    #[Route('/admin/membres/{id}/versement-especes', name: 'admin_payment_record_cash')]
+    #[Route('/admin/members/{id}/cash-payment', name: 'admin_payment_record_cash')]
     public function recordCash(Member $member, Request $request, PaymentService $paymentService): Response
     {
         $this->denyAccessUnlessGranted(AdminPermission::ManagePayments);

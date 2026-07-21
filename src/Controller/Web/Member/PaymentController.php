@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Member;
+namespace App\Controller\Web\Member;
 
 use App\Entity\Member;
 use App\Entity\Payment;
@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_MEMBER')]
 class PaymentController extends AbstractController
 {
-    #[Route('/espace-client/versement', name: 'member_payment_declare')]
+    #[Route('/member-area/payment', name: 'member_payment_declare')]
     public function declare(Request $request, PaymentService $paymentService): Response
     {
         /** @var Member $member */
@@ -37,7 +37,7 @@ class PaymentController extends AbstractController
         return $this->render('member/payment_declare.html.twig', ['form' => $form]);
     }
 
-    #[Route('/espace-client/historique', name: 'member_payment_history')]
+    #[Route('/member-area/history', name: 'member_payment_history')]
     public function history(Request $request, PaymentRepository $paymentRepository): Response
     {
         /** @var Member $member */
