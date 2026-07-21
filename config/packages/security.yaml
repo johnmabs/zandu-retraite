@@ -62,9 +62,9 @@ security:
     access_control:
         - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/espace-client/login$, roles: PUBLIC_ACCESS }
-        - { path: ^/espace-client/inscription, roles: PUBLIC_ACCESS }
-        - { path: ^/espace-client, roles: ROLE_MEMBER }
+        - { path: ^/member-area/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/member-area/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/member-area, roles: ROLE_MEMBER }
 
 when@test:
     security:
