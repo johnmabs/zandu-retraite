@@ -25,7 +25,7 @@ final class AdminUserFactory extends PersistentObjectFactory
             'login' => self::faker()->unique()->userName(),
             'pin' => password_hash('1234', PASSWORD_BCRYPT),
             'role' => AdminRole::SuperAdmin,
-            'permissions' => array_map(fn(AdminPermission $p) => $p->value, AdminPermission::cases()),
+            'permissions' => AdminPermission::cases(), // instances brutes, setPermissions() fait ->value lui-même
             'status' => AdminStatus::Active,
         ];
     }
