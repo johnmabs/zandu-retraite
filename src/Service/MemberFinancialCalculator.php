@@ -5,13 +5,13 @@ namespace App\Service;
 use App\Entity\Member;
 use App\Enum\SalaryCategory;
 use App\Repository\SettingRepository;
-use App\Service\MemberRateResolver;
+use App\Service\MemberRateResolverInterface;
 
 final class MemberFinancialCalculator
 {
     public function __construct(
         private readonly SettingRepository $settingRepository,
-        private readonly MemberRateResolver $memberRateResolver,
+        private readonly MemberRateResolverInterface $memberRateResolver,
     ) {}
 
     // Détermine le palier (Bronze/Argent/Or/Platine) selon les seuils configurés

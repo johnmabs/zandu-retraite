@@ -6,12 +6,12 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Member;
 use App\Repository\SettingRepository;
 use App\Service\MemberFinancialCalculator;
-use App\Service\MemberRateResolver;
+use App\Service\MemberRateResolverInterface;
 
 final class ContractPlaceholderResolver
 {
     public function __construct(
-        private readonly MemberRateResolver $rateResolver,
+        private readonly MemberRateResolverInterface $rateResolver,
         private readonly MemberFinancialCalculator $financialCalculator,
         private readonly SettingRepository $settingRepository,
     ) {}

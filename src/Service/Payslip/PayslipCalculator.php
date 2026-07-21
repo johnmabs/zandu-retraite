@@ -3,7 +3,7 @@
 namespace App\Service\Payslip;
 
 use App\Entity\Member;
-use App\Service\MemberRateResolver;
+use App\Service\MemberRateResolverInterface;
 
 /**
  * Calcul pur, sans effet de bord — facilement testable unitairement sans
@@ -13,7 +13,7 @@ use App\Service\MemberRateResolver;
  */
 final class PayslipCalculator
 {
-    public function __construct(private readonly MemberRateResolver $rateResolver) {}
+    public function __construct(private readonly MemberRateResolverInterface $rateResolver) {}
 
     /** @param \App\Entity\Payment[] $payments */
     public function calculate(Member $member, array $payments): PayslipCalculation
